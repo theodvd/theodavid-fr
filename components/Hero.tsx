@@ -65,9 +65,14 @@ export default function Hero() {
 
   return (
     <section ref={root} id="top" className="relative h-[100svh]">
+      {/* mobile-only scrim: guarantees the name reads over the sun */}
+      <div
+        className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-night via-night/55 to-transparent md:hidden"
+        aria-hidden="true"
+      />
       <div
         ref={content}
-        className="flex h-full flex-col justify-between px-6 pb-10 pt-24 md:px-10"
+        className="relative flex h-full flex-col justify-between px-6 pb-10 pt-24 md:px-10"
       >
         <div className="flex justify-end">
           <p data-fade className="label text-right leading-loose">

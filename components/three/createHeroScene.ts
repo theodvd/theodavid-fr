@@ -267,6 +267,13 @@ export function createHeroScene(
 
   const points = new THREE.Points(geometry, material);
   points.position.copy(STAR_POS);
+  if (isMobile) {
+    // portrait viewports have a narrow horizontal FOV: the sun would sit
+    // behind the headline. Lift it into the top half and shrink it a bit —
+    // the name lives bottom-left, so the lower half stays clear.
+    points.position.y += 1.4;
+    points.scale.setScalar(0.8);
+  }
   scene.add(points);
 
   const resize = () => {
