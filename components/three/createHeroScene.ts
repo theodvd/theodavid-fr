@@ -340,18 +340,18 @@ export function createHeroScene(
     );
     camera.lookAt(lookAt);
 
-    // the sun physically leaves the text columns: shifted into the right
-    // margin while Work/About/Now pass, back to center for the sunrise
-    const aside = smooth(0.05, 0.2, pFast) - smooth(0.74, 0.96, pFast);
+    // the sun physically leaves the text columns once Work starts and
+    // stays in the right margin for the rest of the page
+    const aside = smooth(0.05, 0.2, pFast);
     points.position.x = STAR_POS.x + aside * 3.8;
 
     // the whole system leans toward the cursor
     points.rotation.y += (pointer.x * 0.22 - points.rotation.y) * 0.05;
     points.rotation.x += (-pointer.y * 0.12 - points.rotation.x) * 0.05;
 
-    // recede hard while text sections pass; sunrise for contact
-    uniforms.uDim.value =
-      1 - 0.85 * smooth(0.04, 0.18, pFast) + 0.8 * smooth(0.74, 0.98, pFast);
+    // recede hard once the reading sections start — no sunrise return:
+    // the contact email must stay readable
+    uniforms.uDim.value = 1 - 0.85 * smooth(0.04, 0.18, pFast);
 
     renderer.render(scene, camera);
   });

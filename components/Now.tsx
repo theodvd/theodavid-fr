@@ -2,8 +2,8 @@ import Reveal from "./Reveal";
 
 const NOW = [
   "Scaling growth-data systems at Finary",
-  "Growing Tiro with Yann",
-  "Training for a first marathon",
+  "Building the next billion-dollar startup",
+  "Out climbing — or on a long hike",
 ];
 
 /**

@@ -8,7 +8,7 @@ const SPECS: [string, string][] = [
   ["Venture", "Co-founder & COO — Tiro"],
   ["Open to", "6-month internship — fintech / scale-up · from January 2027"],
   ["Exchanges", "Shenzhen, 5 mo · Casablanca, 3 mo"],
-  ["Elsewhere", "Climbing · Hiking · First marathon in training · Paris ↔ Belgium"],
+  ["Elsewhere", "Climbing · Long hikes · Gym, 4+ years"],
 ];
 
 /**
@@ -53,8 +53,7 @@ export default function About() {
             <p className="mt-8 text-lg leading-relaxed text-muted md:text-xl">
               What I&apos;m building toward — product and growth leadership at
               an early-stage fintech. The discipline comes from elsewhere:
-              four-plus years in the gym, climbing walls, and a first marathon
-              on the calendar.
+              four-plus years in the gym, climbing walls and long hikes.
             </p>
           </Reveal>
 

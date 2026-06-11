@@ -55,6 +55,16 @@ export default function ProjectPage({
       }
     >
       <PlanetCanvas slug={project.slug} />
+      {/* scrim: strong over the text column (left), feathering toward the
+          planet's corner so it stays visible without fighting the copy */}
+      <div
+        className="fixed inset-0 z-0"
+        aria-hidden="true"
+        style={{
+          background:
+            "linear-gradient(90deg, rgba(7,4,3,0.92) 0%, rgba(7,4,3,0.6) 55%, rgba(7,4,3,0.2) 100%)",
+        }}
+      />
       <nav className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-6 md:px-10">
         <Link
           href="/"
@@ -76,7 +86,7 @@ export default function ProjectPage({
           {project.context} · <span className="text-accent">{planet.name}</span>
         </p>
         <h1 className="display mt-6 text-5xl md:text-8xl">{project.title}</h1>
-        <p className="mt-8 max-w-2xl text-lg leading-relaxed text-muted md:text-xl">
+        <p className="mt-8 max-w-2xl text-lg leading-relaxed text-ink md:text-xl">
           {project.description}
         </p>
       </Reveal>

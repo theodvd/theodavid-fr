@@ -219,7 +219,7 @@ export function createPlanetScene(
     uTime: { value: 0 },
     uProgress: { value: reducedMotion ? 1 : 0 },
     uSize: { value: isMobile ? 22 : 30 },
-    uDim: { value: 0.8 },
+    uDim: { value: 0.6 },
     uBandFreq: { value: preset.bandFreq },
     uMoons: { value: preset.moons },
     uColorA: { value: new THREE.Color(preset.colorA) },
@@ -295,7 +295,7 @@ export function createPlanetScene(
 
     // fade out while reading: fully present at the top, gone by one viewport
     const fade = Math.min(window.scrollY / (window.innerHeight * 0.9), 1);
-    uniforms.uDim.value = 0.8 * (1 - fade * 0.92);
+    uniforms.uDim.value = 0.6 * (1 - fade * 0.92);
 
     renderer.render(scene, camera);
   });

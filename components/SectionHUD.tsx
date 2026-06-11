@@ -6,11 +6,12 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+/* Contact is intentionally absent: the HUD hides there so it never
+   overlaps the footer at the bottom of the page. */
 const SECTIONS: [string, string][] = [
   ["#work", "01 / 04 — Work"],
   ["#about", "02 / 04 — About"],
   ["#now", "03 / 04 — Now"],
-  ["#contact", "04 / 04 — Contact"],
 ];
 
 /**
@@ -32,13 +33,15 @@ export default function SectionHUD() {
       })
     );
 
-    // back in the hero -> hide the label
-    const hero = ScrollTrigger.create({
-      trigger: "#top",
-      start: "top top",
-      end: "bottom 55%",
-      onToggle: (self) => self.isActive && setLabel(""),
-    });
+    // hide the label in the hero and through contact/footer
+    const hiders = ["#top", "#contact"].map((sel) =>
+      ScrollTrigger.create({
+        trigger: sel,
+        start: sel === "#top" ? "top top" : "top 55%",
+        end: sel === "#top" ? "bottom 55%" : "bottom top",
+        onToggle: (self) => self.isActive && setLabel(""),
+      })
+    );
 
     const progress = gsap.to(bar.current, {
       scaleX: 1,
@@ -53,7 +56,7 @@ export default function SectionHUD() {
 
     return () => {
       triggers.forEach((t) => t.kill());
-      hero.kill();
+      hiders.forEach((t) => t.kill());
       progress.scrollTrigger?.kill();
       progress.kill();
     };

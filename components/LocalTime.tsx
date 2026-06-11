@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 
 /**
- * Ticking Paris clock for the footer.
- * Renders empty on the server to avoid a hydration mismatch.
+ * Ticking CET/CEST clock for the footer — timezone only, no city
+ * (no location claim). Renders empty on the server to avoid a
+ * hydration mismatch.
  */
 export default function LocalTime() {
   const [time, setTime] = useState("");
@@ -15,6 +16,7 @@ export default function LocalTime() {
       minute: "2-digit",
       second: "2-digit",
       timeZone: "Europe/Paris",
+      timeZoneName: "short",
     });
     const tick = () => setTime(fmt.format(new Date()));
     tick();
@@ -24,7 +26,7 @@ export default function LocalTime() {
 
   return (
     <span className="font-mono tabular-nums" suppressHydrationWarning>
-      {time && `PARIS ${time}`}
+      {time}
     </span>
   );
 }

@@ -61,7 +61,6 @@ export default function Contact() {
       </Reveal>
 
       <footer className="label mt-32 flex flex-col gap-3 border-t border-line py-8 md:flex-row md:items-center md:justify-between">
-        <span>Paris — Brussels</span>
         <LocalTime />
         <span>© 2026 · Next.js / Three.js / GSAP</span>
       </footer>
