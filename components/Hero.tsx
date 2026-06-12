@@ -84,26 +84,22 @@ export default function Hero() {
 
         <div className="flex items-end justify-between gap-8">
           <div>
-            <h1 className="display text-[clamp(4.5rem,15vw,13rem)] uppercase">
+            {/* the sun is the centerpiece — the name steps back */}
+            <h1 className="display text-4xl uppercase md:text-6xl">
               <span className="block overflow-hidden">
                 <span data-line className="block">
-                  Théo
-                </span>
-              </span>
-              <span className="block overflow-hidden">
-                <span data-line className="block">
-                  David
+                  Théo David
                 </span>
               </span>
             </h1>
             <p
               data-fade
-              className="mt-8 max-w-md text-base leading-relaxed text-muted md:text-lg"
+              className="mt-5 max-w-md text-base leading-relaxed text-muted md:text-lg"
             >
               I build growth systems for fintech — data, automation and AI,
               shipped as working products.
             </p>
-            <p data-fade className="label mt-6 flex items-center gap-3 !text-glow">
+            <p data-fade className="label mt-5 flex items-center gap-3 !text-glow">
               <span className="relative flex h-1.5 w-1.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-50 motion-reduce:animate-none" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
