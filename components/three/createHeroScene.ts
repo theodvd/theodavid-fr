@@ -2,34 +2,34 @@ import * as THREE from "three";
 import gsap from "gsap";
 
 /**
- * Hero scene — "The Sun, opened".
+ * Hero scene — "The Sun, in plates".
  *
- * igloo.inc-style centerpiece: a dense, SOLID-looking particle sun
- * (normal blending — matte dust, never blown-out white) sitting center
- * stage. Move the cursor onto it and the surface parts: shell particles
- * within the aperture peel outward like petals, revealing a hot, additive
- * glowing core. Leave, and it seals itself back slowly.
+ * Direct transposition of igloo.inc's gesture, observed live:
+ *  - the object is built of RIGID BLOCKS: the sun's crust is partitioned
+ *    into ~28 Voronoi plates (nearest-seed on a fibonacci sphere). Every
+ *    particle knows its plate; a plate moves as one rigid unit.
+ *  - hovering separates the plates under the cursor in an exploded-view:
+ *    each plate translates outward along its own normal (staggered per
+ *    plate), it never deforms. Gaps open between blocks.
+ *  - light FLOODS from inside: a central additive light sprite + the core
+ *    particles blaze through the gaps. Closed, the seams between plates
+ *    still glow faintly — the igloo's luminous joints.
+ *  - plates carry slightly different albedos so the eye reads "blocks".
  *
- * Two draw calls:
- *  - SHELL: ~26k particles on a noisy sphere, differential rotation,
- *    yellow-orange limb-shaded ramp, NormalBlending => solid planet look.
- *  - INNER (additive): core (revealed on opening) + faint corona +
- *    background starfield, layer chosen per-particle via aType.
- *
- * Interaction: the pointer ray is intersected with the sun sphere in JS;
- * uHit (unit direction of the hit) and uReveal (0..1 strength) feed the
- * shell shader. Opening eases in fast, closes slowly. Touch devices get
- * an autonomous "breathing" reveal whose hit point drifts on the surface.
- *
- * On load the whole system still collapses from chaotic dust (uProgress),
- * ending on a brief core flare. Scroll dims everything under the page
- * scrim — the sun is the hero's piece, not the page's enemy.
+ * Rotation is uniform (not differential) so plates stay rigid over time;
+ * the same rotation is applied to plate centers for honest hit-testing.
+ * Open eases in gently, seals even slower. Touch devices breathe open
+ * autonomously. Chaos-collapse intro and ignition flare preserved.
  */
 
-const R = 2.1; // shell radius (local units)
+const R = 2.1;
+const N_PLATES = 28;
 
 const SHELL_VERTEX = /* glsl */ `
   attribute vec3 aDir;
+  attribute vec3 aPlate;      // plate-center direction (unit)
+  attribute float aPlateSeed; // shared by all particles of a plate
+  attribute float aBorder;    // angular margin to the nearest plate border
   attribute float aSeed;
   attribute vec3 aChaos;
 
@@ -42,48 +42,40 @@ const SHELL_VERTEX = /* glsl */ `
 
   varying float vHeat;
   varying float vLimb;
+  varying float vSeam;
   varying float vInfl;
+  varying float vAlbedo;
   varying float vAlpha;
 
   void main() {
-    vec3 dir = normalize(aDir);
-
-    // differential rotation: equator faster than poles
-    float rotSpeed = 0.1 * (1.0 - 0.45 * abs(dir.y));
-    float a = uTime * rotSpeed + aSeed * 0.0;
+    // uniform rotation keeps plates rigid; plate centers rotate with them
+    float a = uTime * 0.06;
     float ca = cos(a), sa = sin(a);
+    vec3 dir = normalize(aDir);
     vec3 d = vec3(dir.x * ca + dir.z * sa, dir.y, -dir.x * sa + dir.z * ca);
+    vec3 plate = vec3(
+      aPlate.x * ca + aPlate.z * sa,
+      aPlate.y,
+      -aPlate.x * sa + aPlate.z * ca
+    );
 
-    // convection granulation
+    // gentle convection shimmer (small: blocks must read as solid)
     float n = sin(d.x * 9.0 + uTime * 0.5)
             * sin(d.y * 11.0 - uTime * 0.35)
             * sin(d.z * 8.0 + uTime * 0.45);
-    float r = ${R.toFixed(2)} * (1.0 + 0.035 * n);
+    float r = ${R.toFixed(2)} * (1.0 + 0.018 * n);
 
-    // ---- the opening: an iris, not a bulge ----
-    // particles SLIDE ALONG THE SURFACE away from the cursor, parting
-    // like igloo blocks. They stay on the sphere (slight lift only),
-    // compress into a denser — hence brighter — rim around the aperture,
-    // and the core shows through the window they leave behind.
-    float ang = acos(clamp(dot(d, uHit), -1.0, 1.0));
-    float infl = (1.0 - smoothstep(0.0, 1.0, ang)) * uReveal;
+    // ---- exploded view: the WHOLE PLATE separates, rigidly ----
+    float ang = acos(clamp(dot(plate, uHit), -1.0, 1.0));
+    float gate = 1.0 - smoothstep(0.15, 1.15, ang);
+    float infl = clamp(gate * uReveal * 1.5 - aPlateSeed * 0.2, 0.0, 1.0);
+    infl = infl * infl * (3.0 - 2.0 * infl);
+    // translate along the plate normal + a whisper of per-plate drift
+    vec3 disp = plate * infl * 0.6
+              + vec3(sin(aPlateSeed * 6.2831), cos(aPlateSeed * 4.7), sin(aPlateSeed * 9.1))
+                * infl * 0.07 * sin(uTime * 0.6 + aPlateSeed * 6.2831);
 
-    // rotation axis that moves d away from uHit (Rodrigues). Particles
-    // sitting exactly under the cursor fan out evenly, seeded per-particle.
-    vec3 c = cross(uHit, d);
-    float cl = length(c);
-    vec3 t1 = normalize(cross(uHit, abs(uHit.y) < 0.9 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0)));
-    vec3 t2 = cross(uHit, t1);
-    float ra = aSeed * 6.2831;
-    vec3 axis = cl < 0.02 ? normalize(t1 * cos(ra) + t2 * sin(ra)) : c / cl;
-
-    float delta = infl * infl * (1.0 + 0.15 * sin(uTime * 0.7 + aSeed * 6.2831));
-    float cd = cos(delta), sd = sin(delta);
-    vec3 dOpen = d * cd + cross(axis, d) * sd + axis * dot(axis, d) * (1.0 - cd);
-
-    // a whisper of lift mid-travel — a petal turning, never a pustule
-    float lift = sin(min(infl * 3.14159, 3.14159)) * 0.18;
-    vec3 formed = dOpen * (r + lift);
+    vec3 formed = d * r + disp;
 
     // chaos collapse on load
     vec3 chaos = aChaos + 0.2 * vec3(
@@ -99,12 +91,15 @@ const SHELL_VERTEX = /* glsl */ `
     gl_Position = projectionMatrix * mv;
 
     vHeat = 0.5 + 0.5 * n;
-    // camera sits on +z: center of the disc bright, limb darker
     vLimb = clamp(d.z * 0.5 + 0.5, 0.0, 1.0);
+    // luminous joints: particles near a plate border glow, more when open
+    vSeam = smoothstep(0.05, 0.006, aBorder);
     vInfl = infl;
-    vAlpha = (0.92 - infl * 0.15) * mix(0.5, 1.0, p) * uDim;
+    // igloo-style: blocks have individually varied albedo
+    vAlbedo = 0.78 + 0.42 * fract(aPlateSeed * 7.31);
+    vAlpha = 0.96 * mix(0.5, 1.0, p) * uDim;
 
-    gl_PointSize = uSize * (0.55 + 0.8 * aSeed) * (1.0 + infl * 0.25) * (6.0 / -mv.z);
+    gl_PointSize = uSize * (0.55 + 0.8 * aSeed) * (6.0 / -mv.z);
   }
 `;
 
@@ -112,18 +107,23 @@ const SHELL_FRAGMENT = /* glsl */ `
   uniform vec3 uColorHot;
   uniform vec3 uColorMid;
   uniform vec3 uColorDeep;
+  uniform float uReveal;
 
   varying float vHeat;
   varying float vLimb;
+  varying float vSeam;
   varying float vInfl;
+  varying float vAlbedo;
   varying float vAlpha;
 
   void main() {
     float d = distance(gl_PointCoord, vec2(0.5));
-    // hard-ish sprite edge -> dense matte dust, not glow
     float disc = 1.0 - smoothstep(0.3, 0.5, d);
-    vec3 col = mix(uColorDeep, uColorMid, vLimb);
-    col = mix(col, uColorHot, vHeat * 0.35 + vInfl * 0.4);
+    vec3 col = mix(uColorDeep, uColorMid, vLimb) * vAlbedo;
+    col = mix(col, uColorHot, vHeat * 0.2);
+    // the joints: always faintly lit, blazing when the plates part
+    float joint = vSeam * (0.3 + vInfl * 1.4 + uReveal * 0.25);
+    col = mix(col, uColorHot * 1.25, clamp(joint, 0.0, 1.0));
     gl_FragColor = vec4(col, disc * vAlpha);
   }
 `;
@@ -152,25 +152,25 @@ const INNER_VERTEX = /* glsl */ `
     float size = 1.0;
 
     if (aType < 0.5) {
-      // ---- core: hot, pulsing, shines when the shell opens ----
+      // ---- molten core: blazes when the crust opens ----
       vec3 dir = normalize(aDir);
       float pulse = 1.0 + 0.04 * sin(uTime * 1.8 + aSeed * 6.2831);
       float n = sin(dir.x * 7.0 + uTime * 0.8) * sin(dir.y * 6.0 - uTime * 0.6);
-      formed = dir * (0.55 + 0.5 * aDist) * pulse * (1.0 + 0.05 * n);
+      formed = dir * (0.6 + 0.75 * aDist) * pulse * (1.0 + 0.05 * n);
       heat = 1.0;
-      alpha = (0.1 + uReveal * 0.85 + uFlare * 0.8) * (0.6 + 0.4 * aDist);
-      size = 0.9;
+      alpha = (0.12 + uReveal * 0.95 + uFlare * 0.8) * (0.5 + 0.5 * aDist);
+      size = 1.05;
     } else if (aType < 1.5) {
       // ---- faint corona ----
       vec3 dir = normalize(aDir);
-      float a = uTime * 0.04 + aSeed * 6.2831;
-      float ca = cos(a), sa = sin(a);
+      float aa = uTime * 0.04 + aSeed * 6.2831;
+      float ca = cos(aa), sa = sin(aa);
       vec3 dd = vec3(dir.x * ca + dir.z * sa, dir.y, -dir.x * sa + dir.z * ca);
       float breathe = 1.0 + 0.08 * sin(uTime * 0.6 + aSeed * 6.2831);
       formed = dd * ${R.toFixed(2)} * mix(1.05, 1.9, aDist) * breathe;
       heat = 0.8 - aDist * 0.5;
       float fall = 1.0 - aDist;
-      alpha = fall * fall * 0.22;
+      alpha = fall * fall * 0.2;
       size = 0.7;
     } else {
       // ---- background starfield ----
@@ -229,6 +229,35 @@ const randDir = (): [number, number, number] => {
   return [s * Math.cos(phi), s * Math.sin(phi), u];
 };
 
+/** Evenly distributed plate seeds (fibonacci sphere). */
+const plateSeeds = (): THREE.Vector3[] => {
+  const seeds: THREE.Vector3[] = [];
+  const golden = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < N_PLATES; i++) {
+    const y = 1 - (i / (N_PLATES - 1)) * 2;
+    const rad = Math.sqrt(1 - y * y);
+    const th = golden * i;
+    seeds.push(new THREE.Vector3(Math.cos(th) * rad, y, Math.sin(th) * rad));
+  }
+  return seeds;
+};
+
+/** Radial light texture for the central flood (drawn once on a canvas). */
+const makeFloodTexture = (): THREE.Texture => {
+  const cv = document.createElement("canvas");
+  cv.width = cv.height = 256;
+  const ctx = cv.getContext("2d")!;
+  const g = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+  g.addColorStop(0, "rgba(255,240,200,1)");
+  g.addColorStop(0.35, "rgba(255,180,80,0.6)");
+  g.addColorStop(1, "rgba(255,120,30,0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 256, 256);
+  const tex = new THREE.CanvasTexture(cv);
+  tex.needsUpdate = true;
+  return tex;
+};
+
 export type HeroScene = { destroy: () => void };
 
 export function createHeroScene(
@@ -257,8 +286,8 @@ export function createHeroScene(
   container.appendChild(renderer.domElement);
 
   const isMobile = window.innerWidth < 768;
-  const N_SHELL = isMobile ? 11000 : 26000;
-  const N_CORE = isMobile ? 2800 : 7000;
+  const N_SHELL = isMobile ? 12000 : 30000;
+  const N_CORE = isMobile ? 3200 : 8000;
   const N_CORONA = isMobile ? 1500 : 4000;
   const N_BG = isMobile ? 700 : 1500;
 
@@ -275,29 +304,60 @@ export function createHeroScene(
     uReveal: { value: 0 },
   };
 
-  // ---------- shell geometry ----------
+  // ---------- shell: particles assigned to rigid Voronoi plates ----------
+  const seeds = plateSeeds();
   const sDir = new Float32Array(N_SHELL * 3);
+  const sPlate = new Float32Array(N_SHELL * 3);
+  const sPlateSeed = new Float32Array(N_SHELL);
+  const sBorder = new Float32Array(N_SHELL);
   const sSeed = new Float32Array(N_SHELL);
   const sChaos = new Float32Array(N_SHELL * 3);
+  const v = new THREE.Vector3();
+
   for (let i = 0; i < N_SHELL; i++) {
     const [x, y, z] = randDir();
+    v.set(x, y, z);
+    // nearest & second-nearest plate seed -> plate id + border margin
+    let best = 0;
+    let d1 = -2;
+    let d2 = -2;
+    for (let s = 0; s < N_PLATES; s++) {
+      const dot = v.dot(seeds[s]);
+      if (dot > d1) {
+        d2 = d1;
+        d1 = dot;
+        best = s;
+      } else if (dot > d2) {
+        d2 = dot;
+      }
+    }
     sDir[i * 3] = x;
     sDir[i * 3 + 1] = y;
     sDir[i * 3 + 2] = z;
+    sPlate[i * 3] = seeds[best].x;
+    sPlate[i * 3 + 1] = seeds[best].y;
+    sPlate[i * 3 + 2] = seeds[best].z;
+    sPlateSeed[i] = (best + 0.5) / N_PLATES;
+    // angular margin between the two nearest seeds ≈ distance to border
+    sBorder[i] = Math.abs(Math.acos(Math.min(d1, 1)) - Math.acos(Math.min(Math.max(d2, -1), 1)));
     sSeed[i] = Math.random();
     sChaos[i * 3] = (Math.random() - 0.5) * 16;
     sChaos[i * 3 + 1] = (Math.random() - 0.5) * 10;
     sChaos[i * 3 + 2] = (Math.random() - 0.5) * 9;
   }
+
   const shellGeo = new THREE.BufferGeometry();
   shellGeo.setAttribute("position", new THREE.BufferAttribute(sChaos, 3));
   shellGeo.setAttribute("aChaos", new THREE.BufferAttribute(sChaos, 3));
   shellGeo.setAttribute("aDir", new THREE.BufferAttribute(sDir, 3));
+  shellGeo.setAttribute("aPlate", new THREE.BufferAttribute(sPlate, 3));
+  shellGeo.setAttribute("aPlateSeed", new THREE.BufferAttribute(sPlateSeed, 1));
+  shellGeo.setAttribute("aBorder", new THREE.BufferAttribute(sBorder, 1));
   shellGeo.setAttribute("aSeed", new THREE.BufferAttribute(sSeed, 1));
 
   const shellUniforms = {
     ...shared,
-    uSize: { value: isMobile ? 26 : 32 },
+    uSize: { value: isMobile ? 24 : 30 },
     uHit: { value: new THREE.Vector3(0, 0, 1) },
     ...colors,
   };
@@ -307,12 +367,12 @@ export function createHeroScene(
     uniforms: shellUniforms,
     transparent: true,
     depthWrite: false,
-    blending: THREE.NormalBlending, // solid matte dust — never blown out
+    blending: THREE.NormalBlending,
   });
   const shell = new THREE.Points(shellGeo, shellMat);
-  shell.renderOrder = 2;
+  shell.renderOrder = 3;
 
-  // ---------- inner geometry (core + corona + stars) ----------
+  // ---------- inner: core + corona + stars ----------
   const N_INNER = N_CORE + N_CORONA + N_BG;
   const iDir = new Float32Array(N_INNER * 3);
   const iSeed = new Float32Array(N_INNER);
@@ -324,7 +384,11 @@ export function createHeroScene(
     iType[i] = type;
     iSeed[i] = Math.random();
     iDist[i] =
-      type === 0 ? Math.cbrt(Math.random()) : type === 1 ? Math.pow(Math.random(), 2) : Math.random();
+      type === 0
+        ? Math.cbrt(Math.random())
+        : type === 1
+          ? Math.pow(Math.random(), 2)
+          : Math.random();
     const [x, y, z] = randDir();
     iDir[i * 3] = x;
     iDir[i * 3 + 1] = y;
@@ -356,10 +420,23 @@ export function createHeroScene(
     blending: THREE.AdditiveBlending,
   });
   const inner = new THREE.Points(innerGeo, innerMat);
-  inner.renderOrder = 1;
+  inner.renderOrder = 2;
 
-  // ---------- group: center stage; lifted & shrunk on mobile ----------
+  // ---------- the light flood: central additive sprite ----------
+  const floodMat = new THREE.SpriteMaterial({
+    map: makeFloodTexture(),
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    transparent: true,
+    opacity: 0,
+  });
+  const flood = new THREE.Sprite(floodMat);
+  flood.scale.setScalar(R * 2.3);
+  flood.renderOrder = 1;
+
+  // ---------- group ----------
   const group = new THREE.Group();
+  group.add(flood);
   group.add(inner);
   group.add(shell);
   const scaleFactor = isMobile ? 0.72 : 1;
@@ -384,17 +461,19 @@ export function createHeroScene(
     shellMat.dispose();
     innerGeo.dispose();
     innerMat.dispose();
+    floodMat.map?.dispose();
+    floodMat.dispose();
     renderer.dispose();
     renderer.domElement.remove();
   };
 
   if (reducedMotion) {
     shared.uTime.value = 12;
+    floodMat.opacity = 0.12;
     renderer.render(scene, camera);
     return { destroy: disposeAll };
   }
 
-  // collapse, then ignition flare
   gsap
     .timeline()
     .to(shared.uProgress, {
@@ -432,41 +511,37 @@ export function createHeroScene(
     const t = clock.getElapsedTime();
     shared.uTime.value = t;
 
-    // open toward the cursor / close when it leaves
     if (canHover && hasPointer) {
       raycaster.setFromCamera(ndc, camera);
       sphere.center.copy(group.position);
       if (raycaster.ray.intersectSphere(sphere, hitPoint)) {
-        targetHit
-          .copy(hitPoint)
-          .sub(group.position)
-          .normalize();
+        targetHit.copy(hitPoint).sub(group.position).normalize();
         targetReveal = 1;
       } else {
         targetReveal = 0;
       }
     } else if (!canHover) {
-      // touch devices: the sun breathes open on its own, the aperture
-      // drifting slowly across the surface
       targetReveal = 0.45 + 0.35 * Math.sin(t * 0.35);
       targetHit
         .set(Math.sin(t * 0.13), 0.35 * Math.sin(t * 0.09), Math.cos(t * 0.13))
         .normalize();
     }
-    // delicate: gradual open, even slower seal — "ça se remet petit à petit"
     const rate = targetReveal > shellUniforms.uReveal.value ? 0.045 : 0.02;
     shellUniforms.uReveal.value +=
       (targetReveal - shellUniforms.uReveal.value) * rate;
     shellUniforms.uHit.value.lerp(targetHit, 0.07).normalize();
 
-    // subtle camera parallax (kept small so the raycast stays honest)
+    // the flood breathes with the opening (plus a faint idle leak)
+    const reveal = shellUniforms.uReveal.value;
+    floodMat.opacity =
+      (0.1 + reveal * 0.7 + 0.02 * Math.sin(t * 1.6)) * shared.uDim.value;
+
     if (canHover) {
       camera.position.x += (ndc.x * 0.25 - camera.position.x) * 0.04;
       camera.position.y += (0.15 + ndc.y * 0.18 - camera.position.y) * 0.04;
       camera.lookAt(0, 0.15, 0);
     }
 
-    // scroll: recede under the page scrim
     const max = document.documentElement.scrollHeight - window.innerHeight;
     const p = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
     pFast += (p - pFast) * 0.18;
