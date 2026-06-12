@@ -60,19 +60,30 @@ const SHELL_VERTEX = /* glsl */ `
             * sin(d.z * 8.0 + uTime * 0.45);
     float r = ${R.toFixed(2)} * (1.0 + 0.035 * n);
 
-    // ---- the opening ----
-    // angular distance to the (world-space) hit point on the sphere
+    // ---- the opening: an iris, not a bulge ----
+    // particles SLIDE ALONG THE SURFACE away from the cursor, parting
+    // like igloo blocks. They stay on the sphere (slight lift only),
+    // compress into a denser — hence brighter — rim around the aperture,
+    // and the core shows through the window they leave behind.
     float ang = acos(clamp(dot(d, uHit), -1.0, 1.0));
-    float infl = (1.0 - smoothstep(0.0, 0.95, ang)) * uReveal;
-    float infl2 = infl * infl;
-    // petals: radially outward, slightly toward the viewer's hit axis,
-    // with an organic tangential swirl
-    vec3 tang = normalize(cross(d, vec3(0.0, 1.0, 0.0)) + 0.001);
-    vec3 disp = d * infl2 * 1.7
-              + uHit * infl * 0.35
-              + tang * infl2 * 0.45 * sin(uTime * 0.9 + aSeed * 6.2831);
+    float infl = (1.0 - smoothstep(0.0, 1.0, ang)) * uReveal;
 
-    vec3 formed = d * r + disp;
+    // rotation axis that moves d away from uHit (Rodrigues). Particles
+    // sitting exactly under the cursor fan out evenly, seeded per-particle.
+    vec3 c = cross(uHit, d);
+    float cl = length(c);
+    vec3 t1 = normalize(cross(uHit, abs(uHit.y) < 0.9 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0)));
+    vec3 t2 = cross(uHit, t1);
+    float ra = aSeed * 6.2831;
+    vec3 axis = cl < 0.02 ? normalize(t1 * cos(ra) + t2 * sin(ra)) : c / cl;
+
+    float delta = infl * infl * (1.0 + 0.15 * sin(uTime * 0.7 + aSeed * 6.2831));
+    float cd = cos(delta), sd = sin(delta);
+    vec3 dOpen = d * cd + cross(axis, d) * sd + axis * dot(axis, d) * (1.0 - cd);
+
+    // a whisper of lift mid-travel — a petal turning, never a pustule
+    float lift = sin(min(infl * 3.14159, 3.14159)) * 0.18;
+    vec3 formed = dOpen * (r + lift);
 
     // chaos collapse on load
     vec3 chaos = aChaos + 0.2 * vec3(
@@ -91,9 +102,9 @@ const SHELL_VERTEX = /* glsl */ `
     // camera sits on +z: center of the disc bright, limb darker
     vLimb = clamp(d.z * 0.5 + 0.5, 0.0, 1.0);
     vInfl = infl;
-    vAlpha = (0.92 - infl * 0.45) * mix(0.5, 1.0, p) * uDim;
+    vAlpha = (0.92 - infl * 0.15) * mix(0.5, 1.0, p) * uDim;
 
-    gl_PointSize = uSize * (0.55 + 0.8 * aSeed) * (1.0 + infl * 0.6) * (6.0 / -mv.z);
+    gl_PointSize = uSize * (0.55 + 0.8 * aSeed) * (1.0 + infl * 0.25) * (6.0 / -mv.z);
   }
 `;
 
@@ -112,7 +123,7 @@ const SHELL_FRAGMENT = /* glsl */ `
     // hard-ish sprite edge -> dense matte dust, not glow
     float disc = 1.0 - smoothstep(0.3, 0.5, d);
     vec3 col = mix(uColorDeep, uColorMid, vLimb);
-    col = mix(col, uColorHot, vHeat * 0.35 + vInfl * 0.65);
+    col = mix(col, uColorHot, vHeat * 0.35 + vInfl * 0.4);
     gl_FragColor = vec4(col, disc * vAlpha);
   }
 `;
@@ -442,8 +453,8 @@ export function createHeroScene(
         .set(Math.sin(t * 0.13), 0.35 * Math.sin(t * 0.09), Math.cos(t * 0.13))
         .normalize();
     }
-    // fast open, slow seal — "ça se remet petit à petit"
-    const rate = targetReveal > shellUniforms.uReveal.value ? 0.07 : 0.025;
+    // delicate: gradual open, even slower seal — "ça se remet petit à petit"
+    const rate = targetReveal > shellUniforms.uReveal.value ? 0.045 : 0.02;
     shellUniforms.uReveal.value +=
       (targetReveal - shellUniforms.uReveal.value) * rate;
     shellUniforms.uHit.value.lerp(targetHit, 0.07).normalize();
