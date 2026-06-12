@@ -23,7 +23,7 @@ import gsap from "gsap";
  */
 
 const R = 2.1;
-const N_PLATES = 28;
+const N_PLATES = 34;
 
 const SHELL_VERTEX = /* glsl */ `
   attribute vec3 aDir;
@@ -93,11 +93,14 @@ const SHELL_VERTEX = /* glsl */ `
     vHeat = 0.5 + 0.5 * n;
     vLimb = clamp(d.z * 0.5 + 0.5, 0.0, 1.0);
     // luminous joints: particles near a plate border glow, more when open
-    vSeam = smoothstep(0.05, 0.006, aBorder);
+    vSeam = smoothstep(0.08, 0.01, aBorder);
     vInfl = infl;
     // igloo-style: blocks have individually varied albedo
-    vAlbedo = 0.78 + 0.42 * fract(aPlateSeed * 7.31);
-    vAlpha = 0.96 * mix(0.5, 1.0, p) * uDim;
+    vAlbedo = 0.82 + 0.36 * fract(aPlateSeed * 7.31);
+    // the interior is a void of light: the far hemisphere barely renders,
+    // so the flood sprite and core blaze through any opened gap
+    float facing = smoothstep(-0.15, 0.2, d.z);
+    vAlpha = 0.96 * mix(0.16, 1.0, facing) * mix(0.5, 1.0, p) * uDim;
 
     gl_PointSize = uSize * (0.55 + 0.8 * aSeed) * (6.0 / -mv.z);
   }
@@ -120,9 +123,9 @@ const SHELL_FRAGMENT = /* glsl */ `
     float d = distance(gl_PointCoord, vec2(0.5));
     float disc = 1.0 - smoothstep(0.3, 0.5, d);
     vec3 col = mix(uColorDeep, uColorMid, vLimb) * vAlbedo;
-    col = mix(col, uColorHot, vHeat * 0.2);
-    // the joints: always faintly lit, blazing when the plates part
-    float joint = vSeam * (0.3 + vInfl * 1.4 + uReveal * 0.25);
+    col = mix(col, uColorHot, vHeat * 0.12);
+    // the joints: always lit, blazing when the plates part
+    float joint = vSeam * (0.45 + vInfl * 1.6 + uReveal * 0.25);
     col = mix(col, uColorHot * 1.25, clamp(joint, 0.0, 1.0));
     gl_FragColor = vec4(col, disc * vAlpha);
   }
@@ -158,8 +161,8 @@ const INNER_VERTEX = /* glsl */ `
       float n = sin(dir.x * 7.0 + uTime * 0.8) * sin(dir.y * 6.0 - uTime * 0.6);
       formed = dir * (0.6 + 0.75 * aDist) * pulse * (1.0 + 0.05 * n);
       heat = 1.0;
-      alpha = (0.12 + uReveal * 0.95 + uFlare * 0.8) * (0.5 + 0.5 * aDist);
-      size = 1.05;
+      alpha = (0.15 + uReveal * 1.1 + uFlare * 0.8) * (0.5 + 0.5 * aDist);
+      size = 1.35;
     } else if (aType < 1.5) {
       // ---- faint corona ----
       vec3 dir = normalize(aDir);
@@ -534,7 +537,7 @@ export function createHeroScene(
     // the flood breathes with the opening (plus a faint idle leak)
     const reveal = shellUniforms.uReveal.value;
     floodMat.opacity =
-      (0.1 + reveal * 0.7 + 0.02 * Math.sin(t * 1.6)) * shared.uDim.value;
+      (0.12 + reveal * 0.85 + 0.02 * Math.sin(t * 1.6)) * shared.uDim.value;
 
     if (canHover) {
       camera.position.x += (ndc.x * 0.25 - camera.position.x) * 0.04;
