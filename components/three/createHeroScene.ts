@@ -531,6 +531,8 @@ export function createHeroScene(
 
   renderer.setAnimationLoop(() => {
     const t = clock.getElapsedTime();
+    const dt = Math.min(t - prevT, 0.05);
+    prevT = t;
     shared.uTime.value = t;
 
     // is the sun being "held"? desktop = cursor resting on it,
