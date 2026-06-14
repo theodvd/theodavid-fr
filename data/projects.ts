@@ -76,7 +76,7 @@ export const projects: Project[] = [
       "Docker / Caddy",
     ],
     stats: [
-      ["1 conversation", "from prompt to a live digest"],
+      ["1", "conversation to a live digest"],
       ["2 days", "side project to production beta"],
       ["Slack + email", "multi-workspace delivery"],
     ],
