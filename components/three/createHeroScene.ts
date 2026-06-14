@@ -65,15 +65,20 @@ const SHELL_VERTEX = /* glsl */ `
             * sin(d.z * 8.0 + uTime * 0.45);
     float r = ${R.toFixed(2)} * (1.0 + 0.018 * n);
 
-    // ---- exploded view: the WHOLE PLATE separates, rigidly ----
+    // ---- progressive peel: each plate has its own opening THRESHOLD ----
+    // plates near the cursor open first; as uReveal slowly accumulates
+    // (while held), the opening spreads outward plate by plate. Nothing
+    // pops — it peels, and the longer you hold, the further it travels.
     float ang = acos(clamp(dot(plate, uHit), -1.0, 1.0));
-    float gate = 1.0 - smoothstep(0.15, 1.15, ang);
-    float infl = clamp(gate * uReveal * 1.5 - aPlateSeed * 0.2, 0.0, 1.0);
-    infl = infl * infl * (3.0 - 2.0 * infl);
-    // translate along the plate normal + a whisper of per-plate drift
-    vec3 disp = plate * infl * 0.6
-              + vec3(sin(aPlateSeed * 6.2831), cos(aPlateSeed * 4.7), sin(aPlateSeed * 9.1))
-                * infl * 0.07 * sin(uTime * 0.6 + aPlateSeed * 6.2831);
+    float dist = ang / 3.14159;                         // 0 at cursor … 1 far
+    float threshold = dist * 0.72 + aPlateSeed * 0.12;  // staggered start
+    float infl = smoothstep(threshold, threshold + 0.45, uReveal);
+    infl = infl * infl * (3.0 - 2.0 * infl);            // ease in/out
+    // float gently outward along the plate normal, with a slow living
+    // drift that grows as the plate detaches (flow — never frozen)
+    vec3 drift = vec3(sin(aPlateSeed * 6.2831), cos(aPlateSeed * 4.7), sin(aPlateSeed * 9.1));
+    vec3 disp = plate * infl * 0.72
+              + drift * infl * 0.13 * sin(uTime * 0.5 + aPlateSeed * 6.2831);
 
     vec3 formed = d * r + disp;
 
@@ -489,55 +494,78 @@ export function createHeroScene(
     .to(innerUniforms.uFlare, { value: 0, duration: 1.3, ease: "power2.out" });
 
   // ---------- pointer: raycast onto the sun sphere ----------
+  // desktop: keeping the cursor on the sun accumulates the opening.
+  // mobile: touch-and-hold does the same; idle, the sun breathes faintly.
   const canHover = window.matchMedia("(hover: hover)").matches;
   const raycaster = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
   const sphere = new THREE.Sphere(group.position.clone(), R * scaleFactor);
   const hitPoint = new THREE.Vector3();
   const targetHit = new THREE.Vector3(0, 0, 1);
-  let targetReveal = 0;
   let hasPointer = false;
+  let pointerDown = false;
 
-  const onPointer = (e: PointerEvent) => {
+  const setNdc = (e: PointerEvent) => {
     hasPointer = true;
     ndc.set(
       (e.clientX / window.innerWidth) * 2 - 1,
       -(e.clientY / window.innerHeight) * 2 + 1
     );
   };
-  if (canHover) window.addEventListener("pointermove", onPointer);
+  const onMove = (e: PointerEvent) => setNdc(e);
+  const onDown = (e: PointerEvent) => {
+    pointerDown = true;
+    setNdc(e);
+  };
+  const onUp = () => {
+    pointerDown = false;
+  };
+  window.addEventListener("pointermove", onMove);
+  window.addEventListener("pointerdown", onDown);
+  window.addEventListener("pointerup", onUp);
+  window.addEventListener("pointercancel", onUp);
 
   const clock = new THREE.Clock();
   let pFast = 0;
+  let prevT = 0;
 
   renderer.setAnimationLoop(() => {
     const t = clock.getElapsedTime();
     shared.uTime.value = t;
 
-    if (canHover && hasPointer) {
+    // is the sun being "held"? desktop = cursor resting on it,
+    // mobile = finger pressed on it.
+    let holding = false;
+    if (hasPointer) {
       raycaster.setFromCamera(ndc, camera);
       sphere.center.copy(group.position);
       if (raycaster.ray.intersectSphere(sphere, hitPoint)) {
         targetHit.copy(hitPoint).sub(group.position).normalize();
-        targetReveal = 1;
-      } else {
-        targetReveal = 0;
+        holding = canHover ? true : pointerDown;
       }
-    } else if (!canHover) {
-      targetReveal = 0.45 + 0.35 * Math.sin(t * 0.35);
-      targetHit
-        .set(Math.sin(t * 0.13), 0.35 * Math.sin(t * 0.09), Math.cos(t * 0.13))
-        .normalize();
     }
-    const rate = targetReveal > shellUniforms.uReveal.value ? 0.045 : 0.02;
-    shellUniforms.uReveal.value +=
-      (targetReveal - shellUniforms.uReveal.value) * rate;
-    shellUniforms.uHit.value.lerp(targetHit, 0.07).normalize();
+
+    const reveal = shellUniforms.uReveal.value;
+    if (holding) {
+      // accumulate slowly — "plus tu restes, plus ça sort" (~3s to full)
+      shellUniforms.uReveal.value = Math.min(reveal + dt * 0.34, 1);
+    } else if (!canHover) {
+      // mobile idle: a faint living breath that invites a touch
+      const breath = 0.1 + 0.1 * Math.sin(t * 0.5);
+      shellUniforms.uReveal.value += (breath - reveal) * 0.02;
+      targetHit
+        .set(Math.sin(t * 0.12), 0.3 * Math.sin(t * 0.08), Math.cos(t * 0.12))
+        .normalize();
+    } else {
+      // desktop released: seal back even slower (~5s)
+      shellUniforms.uReveal.value = Math.max(reveal - dt * 0.2, 0);
+    }
+    shellUniforms.uHit.value.lerp(targetHit, 0.06).normalize();
 
     // the flood breathes with the opening (plus a faint idle leak)
-    const reveal = shellUniforms.uReveal.value;
+    const rv = shellUniforms.uReveal.value;
     floodMat.opacity =
-      (0.12 + reveal * 0.85 + 0.02 * Math.sin(t * 1.6)) * shared.uDim.value;
+      (0.1 + rv * 0.85 + 0.02 * Math.sin(t * 1.6)) * shared.uDim.value;
 
     if (canHover) {
       camera.position.x += (ndc.x * 0.25 - camera.position.x) * 0.04;
@@ -556,7 +584,10 @@ export function createHeroScene(
   return {
     destroy() {
       renderer.setAnimationLoop(null);
-      if (canHover) window.removeEventListener("pointermove", onPointer);
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
       disposeAll();
     },
   };
