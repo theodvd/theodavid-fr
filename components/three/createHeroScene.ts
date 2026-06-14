@@ -69,20 +69,21 @@ const SHELL_VERTEX = /* glsl */ `
     // plates near the cursor open first; as uReveal slowly accumulates
     // (while held), the opening spreads outward plate by plate. Nothing
     // pops — it peels, and the longer you hold, the further it travels.
-    // opening stays LOCAL to the cursor: only plates inside a cap around
-    // uHit move. The cap radius grows a little while you hold, so the
-    // opening spreads outward — but it never engulfs the whole sun.
+    // LOCAL + GRADUAL. Two ingredients combined:
+    //  - a small spatial cap around the cursor => only 2–3 plates take part
+    //  - a per-plate threshold on uReveal => each plate eases out slowly,
+    //    one after another, over the whole hold (never a quick pop)
     float ang = acos(clamp(dot(plate, uHit), -1.0, 1.0));
-    float reach = 0.30 + uReveal * 0.62;                 // cap radius (radians)
-    float jitter = (aPlateSeed - 0.5) * 0.20;            // organic per-plate edge
-    float infl = smoothstep(reach, reach - 0.5, ang + jitter);
-    infl *= smoothstep(0.0, 0.2, uReveal);               // ease in from closed
+    float local = 1.0 - smoothstep(0.30, 0.62, ang);     // ~2-3 plates near cursor
+    // nearer plates (and lower seeds) start leaving first
+    float threshold = (ang / 0.62) * 0.40 + aPlateSeed * 0.30;
+    float t = smoothstep(threshold, threshold + 0.55, uReveal);
+    float infl = local * t;
     infl = infl * infl * (3.0 - 2.0 * infl);
-    // float outward along the plate normal; depth grows the longer you hold,
-    // with a slow living drift so detached plates never freeze
+    // slide outward along the plate normal + a slow living drift (flow)
     vec3 drift = vec3(sin(aPlateSeed * 6.2831), cos(aPlateSeed * 4.7), sin(aPlateSeed * 9.1));
-    vec3 disp = plate * infl * (0.45 + uReveal * 0.45)
-              + drift * infl * 0.13 * sin(uTime * 0.5 + aPlateSeed * 6.2831);
+    vec3 disp = plate * infl * 0.78
+              + drift * infl * 0.14 * sin(uTime * 0.5 + aPlateSeed * 6.2831);
 
     vec3 formed = d * r + disp;
 
