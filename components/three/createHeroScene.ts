@@ -131,7 +131,7 @@ const FRAGMENT = /* glsl */ `
     // ember -> orange -> near-white heat ramp
     vec3 col = mix(uColorDeep, uColorMid, h);
     col = mix(col, uColorHot, h * h);
-    col *= 0.75 + h * 0.7 + uFlare * 0.8;
+    col *= 0.7 + h * 0.55 + uFlare * 0.7;
     gl_FragColor = vec4(col, strength * vAlpha);
   }
 `;
@@ -251,9 +251,11 @@ export function createHeroScene(
     uSize: { value: isMobile ? 26 : 34 },
     uDim: { value: 1 },
     uFlare: { value: 0 },
-    uColorHot: { value: new THREE.Color("#FFF3DC") },
-    uColorMid: { value: new THREE.Color("#FF9A3C") },
-    uColorDeep: { value: new THREE.Color("#B23A0A") },
+    // hot = warm amber (low blue) so the dense centre accumulates to
+    // orange-gold under additive blending instead of washing out white
+    uColorHot: { value: new THREE.Color("#FFB23D") },
+    uColorMid: { value: new THREE.Color("#FF8A2A") },
+    uColorDeep: { value: new THREE.Color("#A8330A") },
   };
 
   const material = new THREE.ShaderMaterial({
@@ -271,8 +273,8 @@ export function createHeroScene(
     // portrait viewports have a narrow horizontal FOV: the sun would sit
     // behind the headline. Lift it into the top half and shrink it a bit —
     // the name lives bottom-left, so the lower half stays clear.
-    points.position.y += 1.4;
-    points.scale.setScalar(0.8);
+    points.position.y += 1.0;
+    points.scale.setScalar(0.78);
   }
   scene.add(points);
 

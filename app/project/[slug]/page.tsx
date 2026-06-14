@@ -55,10 +55,19 @@ export default function ProjectPage({
       }
     >
       <PlanetCanvas slug={project.slug} />
-      {/* scrim: strong over the text column (left), feathering toward the
-          planet's corner so it stays visible without fighting the copy */}
+      {/* scrim keeps copy readable over the planet. Mobile: near-uniform
+          dark (text is full-width). Desktop: horizontal, feathering toward
+          the planet in the right margin. */}
       <div
-        className="fixed inset-0 z-0"
+        className="fixed inset-0 z-0 md:hidden"
+        aria-hidden="true"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(7,4,3,0.80) 0%, rgba(7,4,3,0.92) 55%)",
+        }}
+      />
+      <div
+        className="fixed inset-0 z-0 hidden md:block"
         aria-hidden="true"
         style={{
           background:

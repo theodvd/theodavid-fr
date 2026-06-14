@@ -12,7 +12,7 @@ const NOW = [
  */
 export default function Now() {
   return (
-    <section id="now" className="px-6 pb-32 md:px-10 md:pb-44">
+    <section id="now" className="px-6 pb-24 md:px-10 md:pb-44">
       <Reveal>
         <p className="label flex items-center gap-3">
           <span className="relative flex h-2 w-2">

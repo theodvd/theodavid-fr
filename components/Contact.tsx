@@ -10,7 +10,7 @@ export default function Contact() {
   return (
     <section
       id="contact"
-      className="flex min-h-[90svh] flex-col justify-between px-6 pt-32 md:px-10 md:pt-44"
+      className="flex min-h-[90svh] flex-col justify-between px-6 pt-24 md:px-10 md:pt-44"
     >
       <Reveal>
         <p className="label">
@@ -32,7 +32,7 @@ export default function Contact() {
         >
           theo.david@audencia.com
         </a>
-        <div className="mt-16 flex gap-8">
+        <div className="mt-12 flex flex-wrap gap-x-8 gap-y-4 md:mt-16">
           <a
             href="https://www.linkedin.com/in/theodavid-tiro"
             target="_blank"

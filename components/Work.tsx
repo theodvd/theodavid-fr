@@ -10,7 +10,7 @@ import { projects } from "@/data/projects";
  */
 export default function Work() {
   return (
-    <section id="work" className="px-6 py-32 md:px-10 md:py-44">
+    <section id="work" className="px-6 py-24 md:px-10 md:py-44">
       <Scrub>
         <Reveal>
           <p className="label">

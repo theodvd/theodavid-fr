@@ -24,7 +24,7 @@ export default function Header() {
   };
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-6 md:px-10">
+    <header className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-5 py-5 md:px-10 md:py-6">
       <a
         href="#top"
         onClick={(e) => go(e, "#top")}
@@ -32,7 +32,7 @@ export default function Header() {
       >
         Théo David
       </a>
-      <nav className="flex items-center gap-6 md:gap-8">
+      <nav className="flex items-center gap-4 md:gap-8">
         {LINKS.map((l) => (
           <a
             key={l.href}

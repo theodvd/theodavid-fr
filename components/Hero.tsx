@@ -65,16 +65,18 @@ export default function Hero() {
 
   return (
     <section ref={root} id="top" className="relative h-[100svh]">
-      {/* mobile-only scrim: guarantees the name reads over the sun */}
+      {/* mobile-only scrim: the sun owns the top, all copy reads over this */}
       <div
-        className="absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-night via-night/55 to-transparent md:hidden"
+        className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-night via-night/75 to-transparent md:hidden"
         aria-hidden="true"
       />
       <div
         ref={content}
-        className="relative flex h-full flex-col justify-between px-6 pb-10 pt-24 md:px-10"
+        className="relative flex h-full flex-col justify-end px-6 pb-12 pt-24 md:justify-between md:px-10 md:pb-10"
       >
-        <div className="flex justify-end">
+        {/* positioning line — desktop top-right; on mobile the top stays
+            clear for the sun and the roles move into the bottom block */}
+        <div className="hidden justify-end md:flex">
           <p data-fade className="label text-right leading-loose">
             Growth Data &amp; Automation — Finary
             <br />
@@ -84,8 +86,7 @@ export default function Hero() {
 
         <div className="flex items-end justify-between gap-8">
           <div>
-            {/* the sun is the centerpiece — the name steps back */}
-            <h1 className="display text-4xl uppercase md:text-6xl">
+            <h1 className="display text-5xl uppercase md:text-6xl">
               <span className="block overflow-hidden">
                 <span data-line className="block">
                   Théo David
@@ -99,7 +100,14 @@ export default function Hero() {
               I build growth systems for fintech — data, automation and AI,
               shipped as working products.
             </p>
-            <p data-fade className="label mt-5 flex items-center gap-3 !text-glow">
+            {/* roles — mobile only (desktop shows them top-right) */}
+            <p data-fade className="label mt-4 md:hidden">
+              Finary — Growth Data &amp; Automation · Tiro — Co-founder
+            </p>
+            <p
+              data-fade
+              className="label mt-5 flex items-center gap-3 !text-glow"
+            >
               <span className="relative flex h-1.5 w-1.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-50 motion-reduce:animate-none" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />

@@ -17,7 +17,7 @@ const SPECS: [string, string][] = [
  */
 export default function About() {
   return (
-    <section id="about" className="px-6 py-32 md:px-10 md:py-44">
+    <section id="about" className="px-6 py-24 md:px-10 md:py-44">
       <div className="grid gap-16 md:grid-cols-12">
         <div className="md:col-span-5">
           <div className="md:sticky md:top-32">
