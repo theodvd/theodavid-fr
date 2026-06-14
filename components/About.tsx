@@ -45,10 +45,11 @@ export default function About() {
               systems the product team actually uses.
             </p>
             <p className="mt-8 text-lg leading-relaxed text-muted md:text-xl">
-              On the side I co-founded Tiro, a B2B creative-tech agency with
-              real clients and real revenue. The thread through everything: I
-              use AI and automation to compress months of work into days, for
-              products used by real people.
+              On the side I co-founded Tiro, a B2B venture I ran as COO —
+              prospecting, GTM and onboarding-to-delivery — to real revenue.
+              The thread through everything: I use AI and automation to
+              compress months of work into days, for products used by real
+              people.
             </p>
             <p className="mt-8 text-lg leading-relaxed text-muted md:text-xl">
               What I&apos;m building toward — product and growth leadership at

@@ -5,8 +5,9 @@
  *
  * Colors are deliberately deep & saturated (not pale) so that, under the
  * scene's additive blending, each planet reads as a DISTINCT hue instead
- * of washing out to white/yellow: Jupiter=amber, Saturn=gold, Venus=peach,
- * Mars=red, Neptune=blue.
+ * of washing out to white/yellow.
+ *
+ * (A future 5th case study will get its own planet — Jupiter is free.)
  */
 export type PlanetSpec = {
   name: string;
@@ -21,20 +22,20 @@ export type PlanetSpec = {
 };
 
 export const planets: Record<string, PlanetSpec> = {
-  "app-review-intelligence": {
-    name: "Jupiter",
-    colorA: "#F2A24E", // amber
-    colorB: "#5E2A0C", // deep rust bands
-    ring: false,
-    moons: 2,
-    tilt: 0.05,
-    bandFreq: 16,
-    accent: "236 150 66", // #EC9642
-    glow: "247 198 132",
+  "multi-agent-fact-checker": {
+    name: "Neptune",
+    colorA: "#6F9FE8", // blue
+    colorB: "#142C68",
+    ring: true,
+    moons: 1,
+    tilt: 0.49,
+    bandFreq: 7,
+    accent: "111 159 232", // #6F9FE8
+    glow: "184 208 247",
   },
-  "growfin-newsletter": {
+  "newsletter-studio": {
     name: "Saturn",
-    colorA: "#EFC34E", // gold
+    colorA: "#EFC34E", // gold — rings read as the orbiting source feeds
     colorB: "#6E4C14",
     ring: true,
     moons: 1,
@@ -65,17 +66,6 @@ export const planets: Record<string, PlanetSpec> = {
     accent: "228 84 54", // #E45436
     glow: "243 158 128",
   },
-  "multi-agent-fact-checker": {
-    name: "Neptune",
-    colorA: "#6F9FE8", // blue
-    colorB: "#142C68",
-    ring: true,
-    moons: 1,
-    tilt: 0.49,
-    bandFreq: 7,
-    accent: "111 159 232", // #6F9FE8
-    glow: "184 208 247",
-  },
 };
 
-export const defaultPlanet: PlanetSpec = planets["app-review-intelligence"];
+export const defaultPlanet: PlanetSpec = planets["multi-agent-fact-checker"];
