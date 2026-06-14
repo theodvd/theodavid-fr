@@ -143,7 +143,7 @@ export function createPlanetScene(
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 50);
-  camera.position.set(0, 0, 6.8);
+  camera.position.set(0, 0, 8.5);
 
   renderer.setClearColor(0x000000, 0);
   renderer.domElement.style.cssText =
@@ -240,7 +240,9 @@ export function createPlanetScene(
   points.rotation.z = preset.tilt;
   group.add(points);
   // upper-right on desktop, higher and more central on mobile
-  group.position.set(isMobile ? 0.7 : 2.5, isMobile ? 1.8 : 1.1, 0);
+  // centred on mobile, upper-right on desktop — the camera then looks
+  // BELOW it (see loop) so the whole planet sits high, fully visible
+  group.position.set(isMobile ? 0 : 2.2, isMobile ? 0.5 : 0.3, 0);
   scene.add(group);
 
   const resize = () => {
@@ -282,16 +284,22 @@ export function createPlanetScene(
   };
   window.addEventListener("pointermove", onPointer);
 
+  // look at a point BELOW the planet so it rises into the upper part of
+  // the frame and reads in full above the title block
+  const lookTarget = new THREE.Vector3();
+  const lookDown = isMobile ? 1.4 : 1.15;
+
   const clock = new THREE.Clock();
   renderer.setAnimationLoop(() => {
     uniforms.uTime.value = clock.getElapsedTime();
 
-    // the planet leans hard toward the cursor — the igloo "it sees you" feel
+    // the planet leans toward the cursor — "it sees you"
     group.rotation.y += (pointer.x * 0.55 - group.rotation.y) * 0.06;
     group.rotation.x += (-pointer.y * 0.3 - group.rotation.x) * 0.06;
     camera.position.x = pointer.x * 0.3;
     camera.position.y = -pointer.y * 0.2;
-    camera.lookAt(group.position);
+    lookTarget.set(group.position.x, group.position.y - lookDown, group.position.z);
+    camera.lookAt(lookTarget);
 
     // fade out while reading: fully present at the top, gone by one viewport
     const fade = Math.min(window.scrollY / (window.innerHeight * 0.9), 1);
