@@ -34,10 +34,11 @@ body {
   @apply font-display font-semibold leading-[0.95] tracking-[-0.02em];
 }
 
-/* Outline-only display text (marquee) */
+/* Outline display text (marquee) — warm amber outline + a faint fill so
+   it reads clearly against the dark background */
 .stroke-text {
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(255, 200, 148, 0.3);
+  color: rgba(255, 150, 70, 0.08);
+  -webkit-text-stroke: 1px rgba(255, 168, 88, 0.62);
 }
 
 /* Link underline that draws in from the left on hover */

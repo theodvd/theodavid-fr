@@ -118,7 +118,7 @@ const FRAGMENT = /* glsl */ `
     float disc = 1.0 - smoothstep(0.1, 0.5, d);
     float strength = pow(disc, 2.2);
     float h = clamp(vHeat, 0.0, 1.0);
-    vec3 col = mix(uColorB, uColorA, h) * (0.7 + h * 0.7);
+    vec3 col = mix(uColorB, uColorA, h) * (0.5 + h * 0.55);
     gl_FragColor = vec4(col, strength * vAlpha);
   }
 `;
@@ -219,7 +219,7 @@ export function createPlanetScene(
     uTime: { value: 0 },
     uProgress: { value: reducedMotion ? 1 : 0 },
     uSize: { value: isMobile ? 22 : 30 },
-    uDim: { value: 0.6 },
+    uDim: { value: 0.9 },
     uBandFreq: { value: preset.bandFreq },
     uMoons: { value: preset.moons },
     uColorA: { value: new THREE.Color(preset.colorA) },
@@ -295,7 +295,7 @@ export function createPlanetScene(
 
     // fade out while reading: fully present at the top, gone by one viewport
     const fade = Math.min(window.scrollY / (window.innerHeight * 0.9), 1);
-    uniforms.uDim.value = 0.6 * (1 - fade * 0.92);
+    uniforms.uDim.value = 0.9 * (1 - fade * 0.94);
 
     renderer.render(scene, camera);
   });

@@ -185,7 +185,9 @@ export function createHeroScene(
 
   // layer budgets — fewer particles on small screens
   const isMobile = window.innerWidth < 768;
-  const N_STAR = isMobile ? 5500 : 14000;
+  // desktop count kept moderate so the dense centre doesn't over-accumulate
+  // into white under additive blending (mobile look is already validated)
+  const N_STAR = isMobile ? 5500 : 9000;
   const N_CORONA = isMobile ? 2200 : 6000;
   const N_BELT = isMobile ? 1800 : 5000;
   const N_BG = isMobile ? 800 : 1600;
@@ -248,7 +250,7 @@ export function createHeroScene(
   const uniforms = {
     uTime: { value: 0 },
     uProgress: { value: reducedMotion ? 1 : 0 },
-    uSize: { value: isMobile ? 26 : 34 },
+    uSize: { value: isMobile ? 26 : 31 },
     uDim: { value: 1 },
     uFlare: { value: 0 },
     // hot = warm amber (low blue) so the dense centre accumulates to
@@ -352,7 +354,8 @@ export function createHeroScene(
     // the sun physically leaves the text columns once Work starts and
     // stays in the right margin for the rest of the page
     const aside = smooth(0.05, 0.2, pFast);
-    points.position.x = STAR_POS.x + aside * 3.8;
+    // nudge a touch left on mobile so the leading particles aren't clipped
+    points.position.x = (isMobile ? 1.9 : STAR_POS.x) + aside * 3.8;
 
     // the whole system leans toward the cursor
     points.rotation.y += (pointer.x * 0.22 - points.rotation.y) * 0.05;
