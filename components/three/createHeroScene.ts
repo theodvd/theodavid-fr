@@ -23,7 +23,7 @@ import gsap from "gsap";
  */
 
 const R = 2.1;
-const N_PLATES = 34;
+const N_PLATES = 40;
 
 const SHELL_VERTEX = /* glsl */ `
   attribute vec3 aDir;
@@ -69,15 +69,19 @@ const SHELL_VERTEX = /* glsl */ `
     // plates near the cursor open first; as uReveal slowly accumulates
     // (while held), the opening spreads outward plate by plate. Nothing
     // pops — it peels, and the longer you hold, the further it travels.
+    // opening stays LOCAL to the cursor: only plates inside a cap around
+    // uHit move. The cap radius grows a little while you hold, so the
+    // opening spreads outward — but it never engulfs the whole sun.
     float ang = acos(clamp(dot(plate, uHit), -1.0, 1.0));
-    float dist = ang / 3.14159;                         // 0 at cursor … 1 far
-    float threshold = dist * 0.72 + aPlateSeed * 0.12;  // staggered start
-    float infl = smoothstep(threshold, threshold + 0.45, uReveal);
-    infl = infl * infl * (3.0 - 2.0 * infl);            // ease in/out
-    // float gently outward along the plate normal, with a slow living
-    // drift that grows as the plate detaches (flow — never frozen)
+    float reach = 0.30 + uReveal * 0.62;                 // cap radius (radians)
+    float jitter = (aPlateSeed - 0.5) * 0.20;            // organic per-plate edge
+    float infl = smoothstep(reach, reach - 0.5, ang + jitter);
+    infl *= smoothstep(0.0, 0.2, uReveal);               // ease in from closed
+    infl = infl * infl * (3.0 - 2.0 * infl);
+    // float outward along the plate normal; depth grows the longer you hold,
+    // with a slow living drift so detached plates never freeze
     vec3 drift = vec3(sin(aPlateSeed * 6.2831), cos(aPlateSeed * 4.7), sin(aPlateSeed * 9.1));
-    vec3 disp = plate * infl * 0.72
+    vec3 disp = plate * infl * (0.45 + uReveal * 0.45)
               + drift * infl * 0.13 * sin(uTime * 0.5 + aPlateSeed * 6.2831);
 
     vec3 formed = d * r + disp;
@@ -102,10 +106,10 @@ const SHELL_VERTEX = /* glsl */ `
     vInfl = infl;
     // igloo-style: blocks have individually varied albedo
     vAlbedo = 0.82 + 0.36 * fract(aPlateSeed * 7.31);
-    // the interior is a void of light: the far hemisphere barely renders,
-    // so the flood sprite and core blaze through any opened gap
-    float facing = smoothstep(-0.15, 0.2, d.z);
-    vAlpha = 0.96 * mix(0.16, 1.0, facing) * mix(0.5, 1.0, p) * uDim;
+    // a solid core mesh now occludes whatever passes directly behind it;
+    // this just keeps the front hemisphere visually dominant
+    float facing = smoothstep(-0.4, 0.25, d.z);
+    vAlpha = 0.96 * mix(0.42, 1.0, facing) * mix(0.5, 1.0, p) * uDim;
 
     gl_PointSize = uSize * (0.55 + 0.8 * aSeed) * (6.0 / -mv.z);
   }
@@ -237,15 +241,13 @@ const randDir = (): [number, number, number] => {
   return [s * Math.cos(phi), s * Math.sin(phi), u];
 };
 
-/** Evenly distributed plate seeds (fibonacci sphere). */
+/** Irregular plate seeds — random points produce Voronoi cells of varied
+ *  sizes (big and small fragments) instead of uniform diamonds. */
 const plateSeeds = (): THREE.Vector3[] => {
   const seeds: THREE.Vector3[] = [];
-  const golden = Math.PI * (3 - Math.sqrt(5));
   for (let i = 0; i < N_PLATES; i++) {
-    const y = 1 - (i / (N_PLATES - 1)) * 2;
-    const rad = Math.sqrt(1 - y * y);
-    const th = golden * i;
-    seeds.push(new THREE.Vector3(Math.cos(th) * rad, y, Math.sin(th) * rad));
+    const [x, y, z] = randDir();
+    seeds.push(new THREE.Vector3(x, y, z));
   }
   return seeds;
 };
@@ -430,11 +432,52 @@ export function createHeroScene(
   const inner = new THREE.Points(innerGeo, innerMat);
   inner.renderOrder = 2;
 
+  // ---------- molten core: an OPAQUE sphere that writes depth, so shell
+  // fragments passing BEHIND it are correctly hidden (only the ones in
+  // front show). Dark when closed, blazing yellow when the crust opens. ----
+  const coreMat = new THREE.ShaderMaterial({
+    uniforms: {
+      uTime: shared.uTime,
+      uReveal: shared.uReveal,
+      uDim: shared.uDim,
+      ...colors,
+    },
+    vertexShader: /* glsl */ `
+      varying vec3 vP;
+      void main() {
+        vP = position;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }`,
+    fragmentShader: /* glsl */ `
+      uniform float uTime; uniform float uReveal; uniform float uDim;
+      uniform vec3 uColorHot; uniform vec3 uColorMid; uniform vec3 uColorDeep;
+      varying vec3 vP;
+      void main() {
+        vec3 n3 = normalize(vP);
+        float n = sin(n3.x * 5.0 + uTime * 0.6)
+                * sin(n3.y * 6.0 - uTime * 0.5)
+                * sin(n3.z * 5.0 + uTime * 0.4);
+        float h = 0.5 + 0.5 * n;
+        vec3 col = mix(uColorDeep, uColorMid, h);
+        col = mix(col, uColorHot, h * h * 0.7);
+        col *= (0.22 + uReveal * 1.15) * uDim;  // dark closed, blazing open
+        gl_FragColor = vec4(col, 1.0);
+      }`,
+    depthWrite: true,
+    depthTest: true,
+  });
+  const coreSphere = new THREE.Mesh(
+    new THREE.SphereGeometry(1.05, 48, 48),
+    coreMat
+  );
+  coreSphere.renderOrder = 0;
+
   // ---------- the light flood: central additive sprite ----------
   const floodMat = new THREE.SpriteMaterial({
     map: makeFloodTexture(),
     blending: THREE.AdditiveBlending,
     depthWrite: false,
+    depthTest: false, // always glows on top — not clipped by the core sphere
     transparent: true,
     opacity: 0,
   });
@@ -444,6 +487,7 @@ export function createHeroScene(
 
   // ---------- group ----------
   const group = new THREE.Group();
+  group.add(coreSphere);
   group.add(flood);
   group.add(inner);
   group.add(shell);
@@ -469,6 +513,8 @@ export function createHeroScene(
     shellMat.dispose();
     innerGeo.dispose();
     innerMat.dispose();
+    coreSphere.geometry.dispose();
+    coreMat.dispose();
     floodMat.map?.dispose();
     floodMat.dispose();
     renderer.dispose();
