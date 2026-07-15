@@ -32,12 +32,12 @@ export const projects: Project[] = [
     year: "2026",
     role: "Designer & builder",
     description:
-      "Two AI agents argue every claim and a confidence-weighted arbiter settles it with live web evidence — cutting video fact-checking from 7h to 2h.",
+      "Two AI agents argue every claim and a confidence-weighted arbiter settles it with live web evidence — cutting video fact-checking from 7h to 1h.",
     tags: ["Multi-agent", "Claude + GPT-4", "Tavily"],
     stack: ["Claude API", "GPT-4", "Tavily", "Notion webhooks"],
     stats: [
-      ["7h → 2h", "per video fact-checked"],
-      ["−71%", "verification time"],
+      ["7h → 1h", "per video fact-checked"],
+      ["−86%", "verification time"],
       ["~10h", "saved per week"],
     ],
     challenge:
@@ -50,7 +50,7 @@ export const projects: Project[] = [
       "A Notion trigger: paste a script, get back an annotated report — claim, verdict, confidence, sources — in the team's existing workspace.",
     ],
     results: [
-      "Fact-checking dropped from ~7 hours to ~2 hours per video — a 71% cut, roughly ten hours back every week, with sources attached to every verdict.",
+      "Fact-checking dropped from ~7 hours to ~1 hour per video — an 86% cut, roughly ten hours back every week, with sources attached to every verdict.",
       "The adversarial setup beat single-model checking: disagreement between the two models is exactly where human attention belongs.",
     ],
   },
