@@ -61,6 +61,8 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${clash.variable} ${satoshi.variable} ${jetbrains.variable}`}
+      // the astres gate stamps data-astres on <html> before hydration
+      suppressHydrationWarning
     >
       <body>
         {children}

@@ -615,6 +615,16 @@ export function createAstresScene(
   let velPhi = 0;
   const pointer = { x: 0, y: 0 };
 
+  // touch: two fingers switch from orbit to pinch-dolly
+  const activePointers = new Map<number, { x: number; y: number }>();
+  let pinching = false;
+  let pinchGap = 0;
+
+  const pointerGap = () => {
+    const pts = Array.from(activePointers.values());
+    return Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+  };
+
   let onArrive: ((id: string) => void) | null = null;
   let onBodyClick: ((id: string) => void) | null = null;
 
@@ -720,6 +730,16 @@ export function createAstresScene(
 
   const onPointerDown = (e: PointerEvent) => {
     canvas.setPointerCapture(e.pointerId);
+    activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (activePointers.size === 2) {
+      // second finger down: the orbit hands over to the pinch
+      pinching = true;
+      dragging = false;
+      pinchGap = pointerGap();
+      gsap.killTweensOf(cam, "dist");
+      return;
+    }
+    if (pinching) return; // a 3rd finger changes nothing
     dragging = true;
     lastX = downX = e.clientX;
     lastY = downY = e.clientY;
@@ -732,6 +752,25 @@ export function createAstresScene(
   };
 
   const onPointerMove = (e: PointerEvent) => {
+    if (activePointers.has(e.pointerId)) {
+      activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    }
+    if (pinching) {
+      if (activePointers.size >= 2) {
+        const gap = pointerGap();
+        if (gap > 0 && pinchGap > 0) {
+          const body = byId.get(toId) ?? bodies[0];
+          cam.dist = clamp(
+            cam.dist * (pinchGap / gap),
+            body.radius * 2.5,
+            MAX_DIST
+          );
+        }
+        pinchGap = gap;
+      }
+      return;
+    }
+
     pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
     pointer.y = (e.clientY / window.innerHeight) * 2 - 1;
 
@@ -750,6 +789,8 @@ export function createAstresScene(
   };
 
   const endDrag = (e: PointerEvent) => {
+    activePointers.delete(e.pointerId);
+    if (pinching && activePointers.size < 2) pinching = false;
     if (!dragging) return;
     dragging = false;
     if (canvas.hasPointerCapture(e.pointerId)) {

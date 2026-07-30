@@ -1,14 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import {
   ASTRES_BODIES,
   SUN_ID,
   createAstresScene,
   type AstresScene,
 } from "./createAstresScene";
-import { astresProjects, sitePageSlugs, sunProfile } from "./astresProjects";
+import { astresProjects, sunProfile } from "./astresProjects";
 import { useReducedMotion } from "@/lib/useReducedMotion";
 
 /**
@@ -348,7 +347,7 @@ export default function AstresApp() {
           aria-hidden={!panelOpen}
         >
           <aside
-            className="astres-panel relative overflow-y-auto border"
+            className="astres-panel relative overflow-y-auto border p-6 md:p-10"
             onClick={(e) => e.stopPropagation()}
             style={{
               width: "min(720px, 92vw)",
@@ -358,7 +357,6 @@ export default function AstresApp() {
               WebkitBackdropFilter: "blur(14px)",
               borderColor: "#2a2a2a",
               borderRadius: "2px",
-              padding: "2.5rem",
               transform: panelOpen ? "none" : "translateY(14px) scale(0.985)",
               transition: "transform 250ms ease",
               overscrollBehavior: "contain",
@@ -488,17 +486,16 @@ export default function AstresApp() {
           aria-hidden={!panelOpen}
         >
         <aside
-          className="astres-panel relative overflow-y-auto border"
+          className="astres-panel relative overflow-y-auto border p-6 md:p-10"
           onClick={(e) => e.stopPropagation()}
           style={{
             width: "min(720px, 92vw)",
             maxHeight: "84vh",
-            background: "rgba(8,8,8,0.92)",
+            background: "rgba(17,19,26,0.94)",
             backdropFilter: "blur(14px)",
             WebkitBackdropFilter: "blur(14px)",
             borderColor: "#2a2a2a",
             borderRadius: "2px",
-            padding: "2.5rem",
             transform: panelOpen ? "none" : "translateY(14px) scale(0.985)",
             transition: "transform 250ms ease",
             overscrollBehavior: "contain",
@@ -624,15 +621,6 @@ export default function AstresApp() {
                 {l.label} ↗
               </a>
             ))}
-            {sitePageSlugs.has(panelProject.slug) && (
-              <Link
-                href={`/project/${panelProject.slug}`}
-                className="astres-btn no-underline"
-                style={{ color: "var(--a-blue)", borderColor: "#33507d" }}
-              >
-                full case study →
-              </Link>
-            )}
           </div>
         </aside>
         </div>
