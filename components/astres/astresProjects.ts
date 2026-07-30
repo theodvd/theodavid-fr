@@ -43,7 +43,52 @@ const etabli: Project = {
   links: [{ label: "etabli.ai", href: "https://etabli.ai" }],
 };
 
-export const astresProjects: Project[] = [...projects, etabli];
+/**
+ * Content Engine — Finary work, astres-only for now. Confidentiality rule:
+ * process metrics only (pillars, retrofit count, cadence), no corporate KPIs,
+ * no internal names, repos or infra details. Facts sourced from the finary
+ * brain (projects/content-engine.md, 2026-07-30).
+ */
+const contentEngine: Project = {
+  slug: "content-engine",
+  index: "06",
+  title: "Content Engine",
+  context: "Finary — Growth",
+  year: "2026 — ongoing",
+  role: "Solo DRI — audit, standards & build",
+  description:
+    "The machinery behind Finary's expert financial content: a full editorial audit, one unified GEO standard, a sourced knowledge base and a partially automated pipeline that keeps the tax experts in the loop — scaling quality instead of trading it away.",
+  tags: ["GEO", "Knowledge base", "Experts in the loop"],
+  stack: [
+    "Claude API",
+    "PostgreSQL + pgvector",
+    "Python",
+    "GitHub Actions",
+    "Notion",
+    "Webflow",
+  ],
+  stats: [
+    ["12+", "sourced knowledge pillars"],
+    ["18/18", "articles rebuilt to one GEO standard"],
+    ["1/day", "expert-gated publishing cadence"],
+  ],
+  challenge:
+    "High-stakes financial content does not forgive errors: one stale tax rate published with confidence does real damage. Production relied on experts' scarce time, while search itself is shifting toward AI assistants — content now has to be structured to be found and cited by them (GEO, generative engine optimization). Full automation would scale the output and lose the trust; the real problem was scaling both.",
+  built: [
+    "A full audit of the editorial system and its generative-search performance, condensed into one unified GEO content standard — then 18 historical articles rebuilt to match it.",
+    "A sourced knowledge base as the single source of truth: every tax figure dated and traced to a primary source, plus the brand's editorial voice — the deterministic ground the AI drafts from, with no perishable market data ingested by design.",
+    "A partially automated pipeline — brief → knowledge refresh → AI draft → deterministic compliance lint → expert review → publication — versioned as code with CI and tests, not a personal workflow.",
+    "Purpose-built review skills for the experts in the loop, so their gate gets faster instead of heavier: fact-checking happens per claim, at review time, with pending items tracked explicitly.",
+    "A measurement loop on AI visibility, to verify the standard against reality over the following weeks — the standard is a bet; the loop is the test.",
+  ],
+  results: [
+    "The pipeline shipped its first article end to end — validated brief to production — with the expert gate intact.",
+    "Editorial operations became versioned, tested code that colleagues can run and audit, instead of knowledge living in one person's head.",
+    "Ongoing: the AI-visibility readout and the production deployment of the always-on service are the next milestones.",
+  ],
+};
+
+export const astresProjects: Project[] = [...projects, etabli, contentEngine];
 
 export const astresPlanets: Record<string, PlanetSpec> = {
   ...planets,
@@ -57,6 +102,17 @@ export const astresPlanets: Record<string, PlanetSpec> = {
     bandFreq: 10,
     accent: "237 176 92",
     glow: "247 216 166",
+  },
+  "content-engine": {
+    name: "Mercury", // the messenger, for the content machinery — cratered grey
+    colorA: "#CFC9BC",
+    colorB: "#575044",
+    ring: false,
+    moons: 0,
+    tilt: 0.01,
+    bandFreq: 6,
+    accent: "207 201 188",
+    glow: "232 226 214",
   },
 };
 

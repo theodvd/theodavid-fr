@@ -86,22 +86,39 @@ export default function AstresApp() {
   // The panel content stays mounted through its 250ms slide-out, so closing
   // it is "hide now, unmount later" — this timer owns that second step.
   const panelClearTimer = useRef<number | null>(null);
+  // Arriving at a planet auto-opens its case study after a beat (never the
+  // sun). Any user decision — opening it early, closing it, leaving — kills
+  // the pending timer, so the auto-open never fights the visitor.
+  const autoOpenTimer = useRef<number | null>(null);
 
-  const openPanel = useCallback((slug: string) => {
-    if (panelClearTimer.current) window.clearTimeout(panelClearTimer.current);
-    setPanelSlug(slug);
-    setPanelOpen(true);
+  const clearAutoOpen = useCallback(() => {
+    if (autoOpenTimer.current) {
+      window.clearTimeout(autoOpenTimer.current);
+      autoOpenTimer.current = null;
+    }
   }, []);
 
+  const openPanel = useCallback(
+    (slug: string) => {
+      clearAutoOpen();
+      if (panelClearTimer.current) window.clearTimeout(panelClearTimer.current);
+      setPanelSlug(slug);
+      setPanelOpen(true);
+    },
+    [clearAutoOpen]
+  );
+
   const closePanel = useCallback(() => {
+    clearAutoOpen();
     setPanelOpen(false);
     if (panelClearTimer.current) window.clearTimeout(panelClearTimer.current);
     panelClearTimer.current = window.setTimeout(() => setPanelSlug(null), 260);
-  }, []);
+  }, [clearAutoOpen]);
 
   useEffect(
     () => () => {
       if (panelClearTimer.current) window.clearTimeout(panelClearTimer.current);
+      if (autoOpenTimer.current) window.clearTimeout(autoOpenTimer.current);
     },
     []
   );
@@ -134,6 +151,12 @@ export default function AstresApp() {
     handle.setOnArrive((id) => {
       setSettled(id);
       setTraveling(false);
+      // parked on a planet: its case study opens by itself after a beat
+      // (clicking the planet earlier still works — that path clears this)
+      clearAutoOpen();
+      if (id !== SUN_ID) {
+        autoOpenTimer.current = window.setTimeout(() => openPanel(id), 2000);
+      }
     });
 
     // The scene already re-focuses when a NON-focused body is clicked; this
@@ -154,7 +177,7 @@ export default function AstresApp() {
       sceneRef.current = null;
       handle.destroy();
     };
-  }, [reduced, openPanel, closePanel]);
+  }, [reduced, openPanel, closePanel, clearAutoOpen]);
 
   useEffect(() => {
     sceneRef.current?.setTimeScale(timeScale);

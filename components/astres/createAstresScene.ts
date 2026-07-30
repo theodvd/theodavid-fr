@@ -71,9 +71,10 @@ const ORBITS = [
   { radius: 28, period: 165, phase: 2.4, inclination: -0.06, approach: -0.7 },
   { radius: 40, period: 255, phase: 4.1, inclination: 0.05, approach: 2.2 },
   { radius: 54, period: 360, phase: 5.6, inclination: -0.04, approach: -2.5 },
-  // spare slot: a 5th project (Jupiter is reserved in planets.ts) must not
-  // fall back onto the 4th orbit and collide with its neighbour
   { radius: 70, period: 500, phase: 1.7, inclination: 0.05, approach: 1.6 },
+  // keep one more slot than there are projects: a new planet must never
+  // fall back onto the last orbit and collide with its neighbour
+  { radius: 86, period: 640, phase: 3.3, inclination: -0.03, approach: 0.4 },
 ];
 
 /**
@@ -95,6 +96,7 @@ const SOLAR_RANK: Record<string, number> = {
 };
 
 const BODY_RADIUS: Record<string, number> = {
+  Mercury: 1.15,
   Venus: 1.55,
   Mars: 1.35,
   Jupiter: 2.5,
@@ -115,7 +117,7 @@ const orbitSlots = new Map(
 const TAU = Math.PI * 2;
 const SUN_RADIUS = 6;
 const SUN_DIST = 30; // far enough that the two inner orbits stay in frame
-const MAX_DIST = 90;
+const MAX_DIST = 120; // far enough to frame the outermost orbit
 
 export const ASTRES_BODIES: AstresBody[] = [
   {
