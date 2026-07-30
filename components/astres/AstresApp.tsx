@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { track } from "@vercel/analytics";
 import {
   ASTRES_BODIES,
   SUN_ID,
@@ -104,6 +105,7 @@ export default function AstresApp() {
       if (panelClearTimer.current) window.clearTimeout(panelClearTimer.current);
       setPanelSlug(slug);
       setPanelOpen(true);
+      track("astres_panel", { slug });
     },
     [clearAutoOpen]
   );
@@ -130,6 +132,7 @@ export default function AstresApp() {
       closePanel(); // leaving a planet always dismisses its case study
       setTraveling(true);
       sceneRef.current?.focusBody(id);
+      track("astres_travel", { body: id });
     },
     [closePanel]
   );
@@ -183,10 +186,38 @@ export default function AstresApp() {
     sceneRef.current?.setTimeScale(timeScale);
   }, [timeScale]);
 
+  // Dialog behavior: Escape closes, Tab is trapped inside the panel, and
+  // focus moves into the dialog on open then back where it was on close.
+  const lastFocused = useRef<HTMLElement | null>(null);
   useEffect(() => {
-    if (!panelOpen) return;
+    if (!panelOpen) {
+      lastFocused.current?.focus?.();
+      lastFocused.current = null;
+      return;
+    }
+    lastFocused.current = document.activeElement as HTMLElement | null;
+    const panel = document.querySelector<HTMLElement>(".astres-panel");
+    panel?.focus();
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closePanel();
+      if (e.key === "Escape") {
+        closePanel();
+        return;
+      }
+      if (e.key !== "Tab" || !panel) return;
+      const focusables = panel.querySelectorAll<HTMLElement>(
+        'a[href], button, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -270,8 +301,13 @@ export default function AstresApp() {
 
       {/* z-20 — HUD top-left */}
       <div
-        className="pointer-events-none fixed left-5 top-5 z-20 leading-[1.7] tracking-[0.1em] md:left-8 md:top-7"
-        style={{ color: "#6b6b6b" }}
+        className="pointer-events-none fixed z-20 leading-[1.7] tracking-[0.1em]"
+        style={{
+          color: "#6b6b6b",
+          // safe areas: keep the HUD out of the notch on tall phones
+          top: "calc(1.25rem + env(safe-area-inset-top))",
+          left: "calc(1.25rem + env(safe-area-inset-left))",
+        }}
       >
         <p>THÉO DAVID · SOLAR INDEX</p>
         <p style={{ color: "#999" }}>{hudTarget}</p>
@@ -279,7 +315,10 @@ export default function AstresApp() {
       </div>
 
       {/* z-20 — time controls, bottom centre */}
-      <div className="fixed bottom-6 left-1/2 z-20 flex -translate-x-1/2 gap-1.5">
+      <div
+        className="fixed left-1/2 z-20 flex -translate-x-1/2 gap-1.5"
+        style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}
+      >
         {TIME_STEPS.map((step) => (
           <button
             key={step.value}
@@ -297,8 +336,12 @@ export default function AstresApp() {
       {/* z-20 — bottom-left block: landing when parked on the sun,
           planet HUD when parked on a planet. Fades out during travel. */}
       <div
-        className="pointer-events-none fixed bottom-16 left-5 z-20 max-w-[min(560px,calc(100vw-2.5rem))] transition-opacity duration-500 md:bottom-20 md:left-8"
-        style={{ opacity: traveling || panelOpen ? 0 : 1 }}
+        className="pointer-events-none fixed z-20 max-w-[min(560px,calc(100vw-2.5rem))] transition-opacity duration-500"
+        style={{
+          opacity: traveling || panelOpen ? 0 : 1,
+          bottom: "calc(4rem + env(safe-area-inset-bottom))",
+          left: "calc(1.25rem + env(safe-area-inset-left))",
+        }}
       >
         {settledBody.isSun ? (
           <div style={{ pointerEvents: traveling || panelOpen ? "none" : "auto" }}>
@@ -370,7 +413,11 @@ export default function AstresApp() {
           aria-hidden={!panelOpen}
         >
           <aside
-            className="astres-panel relative overflow-y-auto border p-6 md:p-10"
+            className="astres-panel relative overflow-y-auto border p-6 outline-none md:p-10"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Who I am"
+            tabIndex={-1}
             onClick={(e) => e.stopPropagation()}
             style={{
               width: "min(720px, 92vw)",
@@ -509,7 +556,11 @@ export default function AstresApp() {
           aria-hidden={!panelOpen}
         >
         <aside
-          className="astres-panel relative overflow-y-auto border p-6 md:p-10"
+          className="astres-panel relative overflow-y-auto border p-6 outline-none md:p-10"
+          role="dialog"
+          aria-modal="true"
+          aria-label={panelProject.title}
+          tabIndex={-1}
           onClick={(e) => e.stopPropagation()}
           style={{
             width: "min(720px, 92vw)",

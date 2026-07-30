@@ -863,6 +863,16 @@ export function createAstresScene(
     const cx = w / 2;
     const cy = h / 2;
 
+    type Placed = {
+      m: MarkerEntry;
+      sx: number;
+      sy: number;
+      halfW: number;
+      halfH: number;
+      off: boolean;
+    };
+    const placed: Placed[] = [];
+
     markers.forEach((m, id) => {
       const body = byId.get(id);
       if (!body) return;
@@ -910,16 +920,37 @@ export function createAstresScene(
       sx = clamp(sx, halfW, w - halfW);
       sy = clamp(sy, halfH, h - halfH);
 
-      m.el.style.transform = `translate(${sx.toFixed(1)}px, ${sy.toFixed(
+      placed.push({ m, sx, sy, halfW, halfH, off });
+    });
+
+    // Anti-collision: when two chips overlap (planets crossing on screen, or
+    // clamped to the same edge), slide the later one below the earlier one.
+    // Six chips at most, so the quadratic re-check is nothing.
+    for (let i = 0; i < placed.length; i++) {
+      const a = placed[i];
+      for (let j = 0; j < i; j++) {
+        const b = placed[j];
+        if (
+          Math.abs(a.sx - b.sx) < a.halfW + b.halfW &&
+          Math.abs(a.sy - b.sy) < a.halfH + b.halfH
+        ) {
+          a.sy = b.sy + b.halfH + a.halfH + 2;
+          j = -1; // moved: re-check against every earlier chip
+        }
+      }
+      a.sy = clamp(a.sy, a.halfH, h - a.halfH);
+    }
+
+    for (const p of placed) {
+      p.m.el.style.transform = `translate(${p.sx.toFixed(1)}px, ${p.sy.toFixed(
         1
       )}px) translate(-50%, -50%)`;
-
-      const flag = off ? "true" : "false";
-      if (m.off !== flag) {
-        m.el.dataset.offscreen = flag;
-        m.off = flag;
+      const flag = p.off ? "true" : "false";
+      if (p.m.off !== flag) {
+        p.m.el.dataset.offscreen = flag;
+        p.m.off = flag;
       }
-    });
+    }
   }
 
   /* ---- resize ---------------------------------------------------- */

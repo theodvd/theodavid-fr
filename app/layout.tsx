@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { JetBrains_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 
 /* Self-hosted variable fonts (Fontshare) — zero external requests. */
@@ -38,16 +39,28 @@ export const metadata: Metadata = {
     siteName: "Théo David",
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: "The portfolio as a solar system: ridgeline sun and planets, one per project.",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Théo David · Growth, Data & Systems",
     description: "I build growth systems for fintech.",
+    images: ["/og.png"],
   },
 };
 
 export const viewport: Viewport = {
   themeColor: "#050505",
+  // let the canvas paint under the notch and home indicator: without this,
+  // tall iPhones show black bars above and below the astres scene
+  viewportFit: "cover",
 };
 
 /* Film grain — inline SVG turbulence, tiled over every page. */
@@ -66,6 +79,7 @@ export default function RootLayout({
     >
       <body>
         {children}
+        <Analytics />
         <div
           className="pointer-events-none fixed inset-0 z-40 opacity-[0.05]"
           style={{ backgroundImage: GRAIN, backgroundSize: "128px 128px" }}
