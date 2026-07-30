@@ -662,8 +662,14 @@ export function createAstresScene(
     return out.lerpVectors(tmpFrom, tmpTo, blend.v);
   }
 
+  // Portrait phones have a narrow horizontal FOV: the same distance that
+  // frames the sun on desktop fills the whole screen on mobile, so pull back.
   const defaultDist = (body: AstresBody) =>
-    body.isSun ? SUN_DIST : body.radius * 7;
+    body.isSun
+      ? isMobile
+        ? SUN_DIST * 1.55
+        : SUN_DIST
+      : body.radius * (isMobile ? 8.5 : 7);
 
   function focusBody(id: string, instant = false) {
     const target = byId.get(id);

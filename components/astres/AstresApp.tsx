@@ -536,6 +536,45 @@ export default function AstresApp() {
                 ))}
               </div>
             </Section>
+
+            <Section label="Credits">
+              <p
+                className="font-body text-[14px] leading-relaxed"
+                style={{ color: "#9a9a9a" }}
+              >
+                This experience is a tribute to{" "}
+                <a
+                  href="https://trucs.ai/astres/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-4 transition-colors hover:text-[#ccc]"
+                  style={{ color: "#c6c6c6" }}
+                >
+                  astres
+                </a>{" "}
+                by trucs.ai and its open-source{" "}
+                <a
+                  href="https://github.com/idle-intelligence/ridgeline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-4 transition-colors hover:text-[#ccc]"
+                  style={{ color: "#c6c6c6" }}
+                >
+                  ridgeline engine
+                </a>
+                , reimagined here in plain Three.js. This site&apos;s{" "}
+                <a
+                  href="https://github.com/theodvd/theodavid-fr"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-4 transition-colors hover:text-[#ccc]"
+                  style={{ color: "#c6c6c6" }}
+                >
+                  source is public
+                </a>{" "}
+                too.
+              </p>
+            </Section>
           </aside>
         </div>
       )}
