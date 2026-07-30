@@ -8,14 +8,18 @@ import Work from "@/components/Work";
 import About from "@/components/About";
 import Now from "@/components/Now";
 import Contact from "@/components/Contact";
+import HomeSwitch from "@/components/astres/HomeSwitch";
 
 /**
- * Single-page assembly — five acts over one persistent WebGL backdrop:
- * noise → signal (Hero) → systems (Work) → human (About/Now) → door (Contact).
- * The fixed canvas sits at z-0; all content scrolls above it at z-10.
+ * The home is capability-gated (HomeSwitch): capable desktop browsers get the
+ * astres solar system; crawlers, small screens and WebGL-less browsers keep
+ * the classic single-page assembly below — five acts over one persistent
+ * WebGL backdrop: noise → signal (Hero) → systems (Work) → human (About/Now)
+ * → door (Contact). The fixed canvas sits at z-0; content scrolls at z-10.
  */
 export default function Home() {
   return (
+    <HomeSwitch>
     <SmoothScroll>
       <HeroCanvas />
       <Header />
@@ -38,5 +42,6 @@ export default function Home() {
         </div>
       </main>
     </SmoothScroll>
+    </HomeSwitch>
   );
 }
