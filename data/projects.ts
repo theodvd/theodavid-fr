@@ -53,6 +53,9 @@ export const projects: Project[] = [
       "Fact-checking dropped from ~7 hours to ~1 hour per video — an 86% cut, roughly ten hours back every week, with sources attached to every verdict.",
       "The adversarial setup beat single-model checking: disagreement between the two models is exactly where human attention belongs.",
     ],
+    links: [
+      { label: "GitHub", href: "https://github.com/theodvd/finary-fact-checker" },
+    ],
   },
   {
     slug: "newsletter-studio",
@@ -96,7 +99,6 @@ export const projects: Project[] = [
     ],
     links: [
       { label: "news.tiro.agency", href: "https://news.tiro.agency" },
-      { label: "GitHub", href: "https://github.com/theodvd/newsletter-studio" },
     ],
   },
   {
@@ -133,9 +135,6 @@ export const projects: Project[] = [
     results: [
       "A working prototype in four days — the proof point for compressing months into days with AI tooling.",
       "Now pivoting toward financial education and investor accompaniment, where the user conversations pointed.",
-    ],
-    links: [
-      { label: "Live prototype", href: "https://tiro-finance.lovable.app/" },
     ],
   },
   {
