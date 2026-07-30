@@ -340,7 +340,7 @@ export default function AstresApp() {
           className="fixed inset-0 z-30 flex items-center justify-center p-4"
           onClick={closePanel}
           style={{
-            background: "rgba(0,0,0,0.55)",
+            background: "rgba(0,0,0,0.45)",
             opacity: panelOpen ? 1 : 0,
             transition: "opacity 250ms ease",
             pointerEvents: panelOpen ? "auto" : "none",
@@ -353,7 +353,7 @@ export default function AstresApp() {
             style={{
               width: "min(720px, 92vw)",
               maxHeight: "84vh",
-              background: "rgba(8,8,8,0.92)",
+              background: "rgba(17,19,26,0.94)",
               backdropFilter: "blur(14px)",
               WebkitBackdropFilter: "blur(14px)",
               borderColor: "#2a2a2a",
@@ -368,7 +368,7 @@ export default function AstresApp() {
               type="button"
               onClick={closePanel}
               className="absolute right-5 top-5 text-lg leading-none transition-colors"
-              style={{ color: "#666" }}
+              style={{ color: "#999" }}
               aria-label="Close"
             >
               ×
@@ -380,11 +380,11 @@ export default function AstresApp() {
 
             <h2
               className="mt-6 font-display font-semibold leading-[1.05] tracking-[-0.01em]"
-              style={{ fontSize: "2rem", color: "#ddd" }}
+              style={{ fontSize: "2rem", color: "#ececec" }}
             >
               {sunProfile.title}
             </h2>
-            <p className="mt-2 tracking-[0.08em]" style={{ color: "#999" }}>
+            <p className="mt-2 tracking-[0.08em]" style={{ color: "#b3b3b3" }}>
               {sunProfile.subtitle}
             </p>
             <p
@@ -399,7 +399,7 @@ export default function AstresApp() {
                 <p
                   key={paragraph}
                   className="mt-4 font-body text-[15px] leading-relaxed first:mt-0"
-                  style={{ color: "#aaa" }}
+                  style={{ color: "#c6c6c6" }}
                 >
                   {paragraph}
                 </p>
@@ -412,9 +412,9 @@ export default function AstresApp() {
                   <li
                     key={item}
                     className="border-t py-3 last:border-b"
-                    style={{ borderColor: "#1c1c1c", color: "#aaa" }}
+                    style={{ borderColor: "#2e2e2e", color: "#c6c6c6" }}
                   >
-                    <span className="mr-4" style={{ color: "#555" }}>
+                    <span className="mr-4" style={{ color: "#8f8f8f" }}>
                       0{i + 1}
                     </span>
                     {item}
@@ -428,17 +428,17 @@ export default function AstresApp() {
                 <div
                   key={key}
                   className="grid grid-cols-12 gap-3 border-t py-3 last:border-b"
-                  style={{ borderColor: "#1c1c1c" }}
+                  style={{ borderColor: "#2e2e2e" }}
                 >
                   <span
                     className="col-span-4 uppercase tracking-[0.1em] text-[10px] leading-relaxed"
-                    style={{ color: "#666" }}
+                    style={{ color: "#9a9a9a" }}
                   >
                     {key}
                   </span>
                   <span
                     className="col-span-8 font-body text-[14px] leading-relaxed"
-                    style={{ color: "#bbb" }}
+                    style={{ color: "#cfcfcf" }}
                   >
                     {value}
                   </span>
@@ -450,7 +450,7 @@ export default function AstresApp() {
               <a
                 href={`mailto:${sunProfile.email}`}
                 className="font-display text-xl transition-colors"
-                style={{ color: "#ddd" }}
+                style={{ color: "#ececec" }}
               >
                 {sunProfile.email}
               </a>
@@ -479,7 +479,7 @@ export default function AstresApp() {
           className="fixed inset-0 z-30 flex items-center justify-center p-4"
           onClick={closePanel}
           style={{
-            background: "rgba(0,0,0,0.55)",
+            background: "rgba(0,0,0,0.45)",
             opacity: panelOpen ? 1 : 0,
             transition: "opacity 250ms ease",
             // still mounted during the fade-out — must not swallow clicks
@@ -508,7 +508,7 @@ export default function AstresApp() {
             type="button"
             onClick={closePanel}
             className="absolute right-5 top-5 text-lg leading-none transition-colors"
-            style={{ color: "#666" }}
+            style={{ color: "#999" }}
             aria-label="Close"
           >
             ×
@@ -520,24 +520,24 @@ export default function AstresApp() {
             </span>{" "}
             · {panelBody.label.toUpperCase()}
           </p>
-          <p className="mt-1.5 tracking-[0.08em]" style={{ color: "#555" }}>
+          <p className="mt-1.5 tracking-[0.08em]" style={{ color: "#8f8f8f" }}>
             {panelProject.context} · {panelProject.year} · {panelProject.role}
           </p>
 
           <h2
             className="mt-6 font-display font-semibold leading-[1.05] tracking-[-0.01em]"
-            style={{ fontSize: "2rem", color: "#ddd" }}
+            style={{ fontSize: "2rem", color: "#ececec" }}
           >
             {panelProject.title}
           </h2>
 
-          <p className="mt-2 tracking-[0.08em]" style={{ color: "#666" }}>
+          <p className="mt-2 tracking-[0.08em]" style={{ color: "#9a9a9a" }}>
             {panelProject.tags.join(" · ")}
           </p>
 
           <p
             className="mt-5 font-body text-[15px] leading-relaxed"
-            style={{ color: "#bbb" }}
+            style={{ color: "#cfcfcf" }}
           >
             {panelProject.description}
           </p>
@@ -553,7 +553,7 @@ export default function AstresApp() {
                 </p>
                 <p
                   className="mt-1.5 text-[10px] uppercase leading-snug tracking-[0.1em]"
-                  style={{ color: "#666" }}
+                  style={{ color: "#9a9a9a" }}
                 >
                   {label}
                 </p>
@@ -564,7 +564,7 @@ export default function AstresApp() {
           <Section label="The challenge">
             <p
               className="font-body text-[15px] leading-relaxed"
-              style={{ color: "#aaa" }}
+              style={{ color: "#c6c6c6" }}
             >
               {panelProject.challenge}
             </p>
@@ -576,7 +576,7 @@ export default function AstresApp() {
                 <li
                   key={item}
                   className="border-t py-3 last:border-b"
-                  style={{ borderColor: "#1c1c1c", color: "#aaa" }}
+                  style={{ borderColor: "#2e2e2e", color: "#c6c6c6" }}
                 >
                   {item}
                 </li>
@@ -590,7 +590,7 @@ export default function AstresApp() {
                 <li
                   key={item}
                   className="border-t py-3 last:border-b"
-                  style={{ borderColor: "#1c1c1c", color: "#aaa" }}
+                  style={{ borderColor: "#2e2e2e", color: "#c6c6c6" }}
                 >
                   {item}
                 </li>
@@ -604,7 +604,7 @@ export default function AstresApp() {
                 <span
                   key={tech}
                   className="rounded-[2px] border px-2.5 py-1 tracking-[0.06em]"
-                  style={{ borderColor: "#2a2a2a", color: "#888" }}
+                  style={{ borderColor: "#3a3a3a", color: "#b3b3b3" }}
                 >
                   {tech}
                 </span>
@@ -651,7 +651,7 @@ function Section({
 }) {
   return (
     <div className="mt-10">
-      <p className="uppercase tracking-[0.14em]" style={{ color: "#555" }}>
+      <p className="uppercase tracking-[0.14em]" style={{ color: "#8f8f8f" }}>
         {label}
       </p>
       <div className="mt-4">{children}</div>
