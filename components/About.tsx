@@ -3,10 +3,10 @@ import Scrub from "./Scrub";
 
 /** Mono key/value spec sheet — the "terminal output" version of a bio. */
 const SPECS: [string, string][] = [
-  ["Education", "BBA Big Data, AI & Mgmt — Audencia × Centrale Nantes, 2027"],
-  ["Currently", "Growth Data & Automation — Finary (solo DRI)"],
-  ["Venture", "Co-founder & COO — Tiro"],
-  ["Open to", "6-month internship — fintech / scale-up · from January 2027"],
+  ["Education", "BBA Big Data, AI & Mgmt · Audencia × Centrale Nantes, 2027"],
+  ["Currently", "Growth Data & Automation · Finary (solo DRI)"],
+  ["Venture", "Co-founder & COO · Tiro"],
+  ["Open to", "6-month internship · fintech / scale-up · from January 2027"],
   ["Exchanges", "Shenzhen, 5 mo · Casablanca, 3 mo"],
   ["Elsewhere", "Climbing · Long hikes · Gym, 4+ years"],
 ];
@@ -23,7 +23,7 @@ export default function About() {
           <div className="md:sticky md:top-32">
             <Reveal>
               <p className="label">
-                <span className="text-accent">02</span> — About
+                <span className="text-accent">02</span> · About
               </p>
               <Scrub from={30} to={-30}>
                 <h2 className="display mt-6 text-4xl leading-tight md:text-6xl">
@@ -41,18 +41,18 @@ export default function About() {
             <p className="text-lg leading-relaxed text-ink md:text-xl">
               I&apos;m a business operator who ships. Third-year BBA student at
               Audencia × Centrale Nantes, currently the solo DRI for Growth
-              Data &amp; Automation at Finary — pipelines, dashboards and AI
+              Data &amp; Automation at Finary: pipelines, dashboards and AI
               systems the product team actually uses.
             </p>
             <p className="mt-8 text-lg leading-relaxed text-muted md:text-xl">
-              On the side I co-founded Tiro, a B2B venture I ran as COO —
-              prospecting, GTM and onboarding-to-delivery — to real revenue.
+              On the side I co-founded Tiro, a B2B venture I ran as COO
+              (prospecting, GTM and onboarding-to-delivery) to real revenue.
               The thread through everything: I use AI and automation to
               compress months of work into days, for products used by real
               people.
             </p>
             <p className="mt-8 text-lg leading-relaxed text-muted md:text-xl">
-              What I&apos;m building toward — product and growth leadership at
+              What I&apos;m building toward: product and growth leadership at
               an early-stage fintech. The discipline comes from elsewhere:
               four-plus years in the gym, climbing walls and long hikes.
             </p>

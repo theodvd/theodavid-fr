@@ -8,7 +8,7 @@ export default function NotFound() {
   return (
     <main className="relative z-10 flex min-h-[100svh] flex-col items-center justify-center px-6 text-center">
       <p className="label">
-        <span className="text-accent">404</span> — Signal lost
+        <span className="text-accent">404</span> · Signal lost
       </p>
       <h1 className="display mt-6 text-5xl md:text-8xl">
         This page drifted

@@ -14,7 +14,7 @@ export default function Work() {
       <Scrub>
         <Reveal>
           <p className="label">
-            <span className="text-accent">01</span> — Selected Work
+            <span className="text-accent">01</span> · Selected Work
           </p>
           <h2 className="display mt-6 text-5xl md:text-7xl">
             Systems that shipped

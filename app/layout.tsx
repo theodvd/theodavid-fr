@@ -27,11 +27,11 @@ const jetbrains = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://theodavid.com"),
-  title: "Théo David — Growth, Data & Systems",
+  title: "Théo David · Growth, Data & Systems",
   description:
-    "Growth Data & Automation at Finary. Co-founder of Tiro. I build growth systems for fintech — data pipelines, AI automation and working products, shipped.",
+    "Growth Data & Automation at Finary. Co-founder of Tiro. I build growth systems for fintech: data pipelines, AI automation and working products, shipped.",
   openGraph: {
-    title: "Théo David — Growth, Data & Systems",
+    title: "Théo David · Growth, Data & Systems",
     description:
       "I build growth systems for fintech. Data pipelines, AI automation and working products, shipped.",
     url: "https://theodavid.com",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Théo David — Growth, Data & Systems",
+    title: "Théo David · Growth, Data & Systems",
     description: "I build growth systems for fintech.",
   },
 };

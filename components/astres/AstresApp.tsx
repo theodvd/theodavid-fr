@@ -273,7 +273,7 @@ export default function AstresApp() {
         className="pointer-events-none fixed left-5 top-5 z-20 leading-[1.7] tracking-[0.1em] md:left-8 md:top-7"
         style={{ color: "#6b6b6b" }}
       >
-        <p>THÉO DAVID — SOLAR INDEX</p>
+        <p>THÉO DAVID · SOLAR INDEX</p>
         <p style={{ color: "#999" }}>{hudTarget}</p>
         <p>TIME {timeScale}×</p>
       </div>
@@ -309,7 +309,7 @@ export default function AstresApp() {
               Théo David
             </h1>
             <p className="mt-4 tracking-[0.06em]" style={{ color: "#999" }}>
-              Growth, Data &amp; Systems — the portfolio as a solar system
+              Growth, Data &amp; Systems · the portfolio as a solar system
             </p>
             <p className="mt-2 tracking-[0.06em]" style={{ color: "#6f6f6f" }}>
               drag to orbit · scroll to zoom · click a marker to travel · click a
@@ -319,7 +319,7 @@ export default function AstresApp() {
               className="mt-4 tracking-[0.06em]"
               style={{ color: "var(--a-blue)" }}
             >
-              click the sun — who I am
+              click the sun · who I am
             </p>
           </div>
         ) : (

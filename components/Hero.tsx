@@ -78,9 +78,9 @@ export default function Hero() {
             clear for the sun and the roles move into the bottom block */}
         <div className="hidden justify-end md:flex">
           <p data-fade className="label text-right leading-loose">
-            Growth Data &amp; Automation — Finary
+            Growth Data &amp; Automation · Finary
             <br />
-            Co-founder &amp; COO — Tiro
+            Co-founder &amp; COO · Tiro
           </p>
         </div>
 
@@ -97,12 +97,12 @@ export default function Hero() {
               data-fade
               className="mt-5 max-w-md text-base leading-relaxed text-muted md:text-lg"
             >
-              I build growth systems for fintech — data, automation and AI,
+              I build growth systems for fintech: data, automation and AI,
               shipped as working products.
             </p>
             {/* roles — mobile only (desktop shows them top-right) */}
             <p data-fade className="label mt-4 md:hidden">
-              Finary — Growth Data &amp; Automation · Tiro — Co-founder
+              Finary (Growth Data &amp; Automation) · Tiro (Co-founder)
             </p>
             <p
               data-fade
@@ -112,7 +112,7 @@ export default function Hero() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-50 motion-reduce:animate-none" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
               </span>
-              Open — 6-month internship · from Jan 2027
+              Open · 6-month internship · from Jan 2027
             </p>
           </div>
 

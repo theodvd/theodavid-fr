@@ -14,7 +14,7 @@ export default function Contact() {
     >
       <Reveal>
         <p className="label">
-          <span className="text-accent">04</span> — Contact
+          <span className="text-accent">04</span> · Contact
         </p>
         <h2 className="display mt-6 text-4xl md:text-6xl">
           Building something in fintech?
@@ -24,7 +24,7 @@ export default function Contact() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-50 motion-reduce:animate-none" />
             <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
           </span>
-          Open — 6-month internship · fintech / scale-up · from January 2027
+          Open · 6-month internship · fintech / scale-up · from January 2027
         </p>
         <a
           href="mailto:theo.david@audencia.com"

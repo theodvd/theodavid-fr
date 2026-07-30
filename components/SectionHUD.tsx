@@ -9,9 +9,9 @@ gsap.registerPlugin(ScrollTrigger);
 /* Contact is intentionally absent: the HUD hides there so it never
    overlaps the footer at the bottom of the page. */
 const SECTIONS: [string, string][] = [
-  ["#work", "01 / 04 — Work"],
-  ["#about", "02 / 04 — About"],
-  ["#now", "03 / 04 — Now"],
+  ["#work", "01 / 04 · Work"],
+  ["#about", "02 / 04 · About"],
+  ["#now", "03 / 04 · Now"],
 ];
 
 /**

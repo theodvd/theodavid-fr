@@ -28,7 +28,7 @@ export function generateMetadata({
   const project = projects.find((p) => p.slug === params.slug);
   if (!project) return {};
   return {
-    title: `${project.title} — Théo David`,
+    title: `${project.title} · Théo David`,
     description: project.description,
   };
 }
@@ -83,7 +83,7 @@ export default function ProjectPage({
         />
         <Reveal className="relative max-w-4xl">
           <p className="label">
-            <span className="text-accent">{project.index}</span> — Case study ·{" "}
+            <span className="text-accent">{project.index}</span> · Case study ·{" "}
             {project.context} ·{" "}
             <span className="text-accent">{planet.name}</span>
           </p>

@@ -3,7 +3,7 @@ import Reveal from "./Reveal";
 const NOW = [
   "Scaling growth-data systems at Finary",
   "Building the next billion-dollar startup",
-  "Out climbing — or on a long hike",
+  "Out climbing, or on a long hike",
 ];
 
 /**
@@ -19,7 +19,7 @@ export default function Now() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-40 motion-reduce:animate-none" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
           </span>
-          <span className="text-accent">03</span> — Now
+          <span className="text-accent">03</span> · Now
         </p>
       </Reveal>
       <Reveal stagger={0.12} className="mt-10">

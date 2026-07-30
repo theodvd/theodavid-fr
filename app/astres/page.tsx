@@ -9,7 +9,7 @@ import AstresApp from "@/components/astres/AstresApp";
  * the index because it is a signature piece, not a navigation entry point.
  */
 export const metadata: Metadata = {
-  title: "astres — Théo David",
+  title: "astres · Théo David",
   description:
     "An experimental index: the portfolio as a solar system of ridgeline globes.",
   robots: { index: false, follow: false },
