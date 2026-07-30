@@ -57,7 +57,9 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#050505",
+  // the astres sky color: Safari tints its chrome with this, so the browser
+  // bars blend into the scene instead of reading as black bands
+  themeColor: "#0a0d16",
   // let the canvas paint under the notch and home indicator: without this,
   // tall iPhones show black bars above and below the astres scene
   viewportFit: "cover",

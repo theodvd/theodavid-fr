@@ -257,8 +257,10 @@ export default function AstresApp() {
 
   return (
     <div
-      className="astres-root fixed inset-0 overflow-hidden bg-black font-mono text-[11px]"
-      style={{ color: "#666" }}
+      className="astres-root fixed inset-0 overflow-hidden font-mono text-[11px]"
+      // same color as the in-scene sky sphere: any sliver the canvas does not
+      // cover (safe areas, URL-bar collapse) blends in instead of going black
+      style={{ color: "#666", background: "#0a0d16" }}
     >
       <style dangerouslySetInnerHTML={{ __html: CSS }} />
 
