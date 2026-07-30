@@ -99,6 +99,7 @@ export const projects: Project[] = [
     ],
     links: [
       { label: "news.tiro.agency", href: "https://news.tiro.agency" },
+      { label: "GitHub", href: "https://github.com/theodvd/newsletter-studio" },
     ],
   },
   {
