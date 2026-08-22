@@ -4,9 +4,9 @@ import Scrub from "./Scrub";
 /** Mono key/value spec sheet — the "terminal output" version of a bio. */
 const SPECS: [string, string][] = [
   ["Education", "BBA Big Data, AI & Mgmt · Audencia × Centrale Nantes, 2027"],
-  ["Currently", "Growth Data & Automation · Finary (solo DRI)"],
-  ["Venture", "Co-founder & COO · Tiro"],
-  ["Open to", "6-month internship · fintech / scale-up · from January 2027"],
+  ["Currently", "Freelance Growth Engineer · missions open"],
+  ["Previously", "Growth Engineer · Finary · Co-founder & COO · Tiro"],
+  ["Open to", "Freelance missions · final 6-month internship from Feb 2027"],
   ["Exchanges", "Shenzhen, 5 mo · Casablanca, 3 mo"],
   ["Elsewhere", "Climbing · Long hikes · Gym, 4+ years"],
 ];
@@ -39,10 +39,12 @@ export default function About() {
         <div className="md:col-span-6 md:col-start-7">
           <Reveal stagger={0.15}>
             <p className="text-lg leading-relaxed text-ink md:text-xl">
-              I&apos;m a business operator who ships. Third-year BBA student at
-              Audencia × Centrale Nantes, currently the solo DRI for Growth
-              Data &amp; Automation at Finary: pipelines, dashboards and AI
-              systems the product team actually uses.
+              I&apos;m a business operator who ships. Final-year BBA student at
+              Audencia × Centrale Nantes, now a freelance Growth Engineer.
+              This summer at Finary I was the solo DRI for Growth Data &amp;
+              Automation: an outbound engine over a 1M-user base, an editorial
+              pipeline publishing daily unattended, eight production tools the
+              teams actually use.
             </p>
             <p className="mt-8 text-lg leading-relaxed text-muted md:text-xl">
               On the side I co-founded Tiro, a B2B venture I ran as COO

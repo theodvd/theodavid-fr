@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://theodavid.com"),
   title: "Théo David · Growth, Data & Systems",
   description:
-    "Growth Data & Automation at Finary. Co-founder of Tiro. I build growth systems for fintech: data pipelines, AI automation and working products, shipped.",
+    "Freelance Growth Engineer. I build acquisition machines: outbound, data pipelines and AI systems, shipped as working products. Previously Growth Data & Automation at Finary.",
   openGraph: {
     title: "Théo David · Growth, Data & Systems",
     description:
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Théo David · Growth, Data & Systems",
-    description: "I build growth systems for fintech.",
+    description: "I build acquisition machines: outbound, data and AI.",
     images: ["/og.png"],
   },
 };

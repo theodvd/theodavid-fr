@@ -127,29 +127,32 @@ export const sunProfile = {
   title: "Théo David",
   subtitle: "Operator first. Builder by default.",
   availability:
-    "Open · 6-month internship · fintech / scale-up · from January 2027",
+    "Open · freelance missions now · final 6-month internship from Feb 2027",
   bio: [
-    "I'm a business operator who ships. Third-year BBA student at Audencia × Centrale Nantes, currently the solo DRI for Growth Data & Automation at Finary: pipelines, dashboards and AI systems the product team actually uses.",
+    "I'm a business operator who ships. Final-year BBA student at Audencia × Centrale Nantes, now a freelance Growth Engineer. This summer at Finary I was the solo DRI for Growth Data & Automation: an outbound engine over a 1M-user base, an editorial pipeline publishing daily unattended, eight production tools the teams actually use.",
     "On the side I co-founded Tiro, a B2B venture I ran as COO (prospecting, GTM and onboarding-to-delivery) to real revenue. The thread through everything: I use AI and automation to compress months of work into days, for products used by real people.",
     "What I'm building toward: product and growth leadership at an early-stage fintech. The discipline comes from elsewhere: four-plus years in the gym, climbing walls and long hikes.",
   ],
   now: [
-    "Scaling growth-data systems at Finary",
-    "Building the next billion-dollar startup",
+    "Freelance growth engineering missions",
+    "Choosing where my final internship lands (Feb 2027)",
     "Out climbing, or on a long hike",
   ],
   specs: [
     ["Education", "BBA Big Data, AI & Mgmt · Audencia × Centrale Nantes, 2027"],
-    ["Currently", "Growth Data & Automation · Finary (solo DRI)"],
-    ["Venture", "Co-founder & COO · Tiro"],
-    ["Open to", "6-month internship · fintech / scale-up · from January 2027"],
+    ["Currently", "Freelance Growth Engineer · missions open"],
+    ["Previously", "Growth Engineer · Finary · Co-founder & COO · Tiro"],
+    ["Open to", "Freelance missions · final 6-month internship from Feb 2027"],
     ["Exchanges", "Shenzhen, 5 mo · Casablanca, 3 mo"],
     ["Elsewhere", "Climbing · Long hikes · Gym, 4+ years"],
   ] as [string, string][],
   email: "theo.david@audencia.com",
   links: [
-    { label: "LinkedIn", href: "https://www.linkedin.com/in/theodavid-tiro" },
+    {
+      label: "Book 30 min",
+      href: "https://calendly.com/theodavid/diagnostic-growth",
+    },
+    { label: "LinkedIn", href: "https://www.linkedin.com/in/theodvd" },
     { label: "GitHub", href: "https://github.com/theodvd" },
-    { label: "Tiro", href: "https://tiro.agency" },
   ],
 };

@@ -8,7 +8,7 @@ import { useReducedMotion } from "@/lib/useReducedMotion";
 gsap.registerPlugin(ScrollTrigger);
 
 const PHRASE =
-  "Growth systems · Data pipelines · AI automation · Shipped, not slideware · ";
+  "Acquisition machines · Data pipelines · AI automation · Shipped, not slideware · ";
 
 /**
  * Full-bleed outline-text marquee between hero and work.

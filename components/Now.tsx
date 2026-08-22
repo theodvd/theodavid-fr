@@ -1,8 +1,8 @@
 import Reveal from "./Reveal";
 
 const NOW = [
-  "Scaling growth-data systems at Finary",
-  "Building the next billion-dollar startup",
+  "Freelance growth engineering missions",
+  "Choosing where my final internship lands (Feb 2027)",
   "Out climbing, or on a long hike",
 ];
 
