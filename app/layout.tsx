@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
+import { PostHogInit } from "@/components/PostHogInit";
 import "./globals.css";
 
 /* Self-hosted variable fonts (Fontshare) — zero external requests. */
@@ -82,6 +83,7 @@ export default function RootLayout({
       <body>
         {children}
         <Analytics />
+        <PostHogInit />
         <div
           className="pointer-events-none fixed inset-0 z-40 opacity-[0.05]"
           style={{ backgroundImage: GRAIN, backgroundSize: "128px 128px" }}
