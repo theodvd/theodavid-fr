@@ -906,7 +906,7 @@ export function createAstresScene(
         sy > h - MARKER_INSET;
 
       if (off) {
-        let dx = sx - cx;
+        const dx = sx - cx;
         let dy = sy - cy;
         if (Math.abs(dx) < 1e-4 && Math.abs(dy) < 1e-4) dy = 1;
         // push the point out to the inset rectangle border
