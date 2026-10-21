@@ -20,12 +20,16 @@ export function generateStaticParams() {
   return projects.map((p) => ({ slug: p.slug }));
 }
 
-export function generateMetadata({
+// Next 15 : `params` est désormais une Promise, à attendre avant lecture.
+type ProjectPageProps = {
+  params: Promise<{ slug: string }>;
+};
+
+export async function generateMetadata({
   params,
-}: {
-  params: { slug: string };
-}): Metadata {
-  const project = projects.find((p) => p.slug === params.slug);
+}: ProjectPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const project = projects.find((p) => p.slug === slug);
   if (!project) return {};
   return {
     title: `${project.title} · Théo David`,
@@ -33,12 +37,9 @@ export function generateMetadata({
   };
 }
 
-export default function ProjectPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
-  const i = projects.findIndex((p) => p.slug === params.slug);
+export default async function ProjectPage({ params }: ProjectPageProps) {
+  const { slug } = await params;
+  const i = projects.findIndex((p) => p.slug === slug);
   if (i === -1) notFound();
 
   const project = projects[i];
